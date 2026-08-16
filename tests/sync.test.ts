@@ -26,7 +26,7 @@ test('packaged webview resources are referenced by CSP and ignored sources are e
   const extension = fs.readFileSync(path.join(process.cwd(), 'src/extension.ts'), 'utf8');
   const ignore = fs.readFileSync(path.join(process.cwd(), '.vscodeignore'), 'utf8');
   assert.match(extension, /joinPath\(this\.context\.extensionUri, 'dist', 'webview\.js'\)/);
-  assert.match(extension, /joinPath\(this\.context\.extensionUri, 'media', 'notion-theme\.css'\)/);
+  assert.match(extension, /joinPath\(this\.context\.extensionUri, 'media', 'editor-theme\.css'\)/);
   assert.match(extension, /script-src[^`]*\$\{script\}/);
   assert.match(extension, /stylesheet[^`]*\$\{theme\}/);
   assert.match(ignore, /^!dist\/\*\*$/m);

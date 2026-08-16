@@ -6,12 +6,13 @@ All notable changes to this project are documented here.
 
 ### Added
 
-- Initial Notion-inspired visual Markdown editor surface for VS Code.
+- Initial Yet Another Markdown Editor release for VS Code.
 - Editable block canvas with Markdown and common GFM rendering coverage.
 - Keyboard-first formatting, slash insertion, block menus, copy/paste, and raw-source fallback.
 - VS Code light, dark, and high-contrast theme-aware styling with accessible focus states.
 - Responsive narrow-panel layout and reduced-motion support.
-- Original extension icon and project documentation.
+- Cross-platform `:emoji:` autocomplete with keyboard and mouse navigation.
+- Original Y-shaped application logo, GitHub Release distribution, and feature screenshots.
 
 ### Notes
 

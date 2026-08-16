@@ -2,16 +2,16 @@ import * as vscode from 'vscode';
 import { EditorToHostMessage, HostToEditorMessage, isEditorToHostMessage } from './protocol';
 import { isExternalDocumentChange } from './sync';
 
-const VIEW_TYPE = 'notionMarkdown.editor';
+const VIEW_TYPE = 'yetAnotherMarkdown.editor';
 
 export function activate(context: vscode.ExtensionContext): void {
-  const provider = new NotionMarkdownEditorProvider(context);
+  const provider = new YetAnotherMarkdownEditorProvider(context);
   context.subscriptions.push(
     vscode.window.registerCustomEditorProvider(VIEW_TYPE, provider, {
       supportsMultipleEditorsPerDocument: false,
       webviewOptions: { retainContextWhenHidden: true }
     }),
-    vscode.commands.registerCommand('notionMarkdown.openSource', async (resource?: vscode.Uri) => {
+    vscode.commands.registerCommand('yetAnotherMarkdown.openSource', async (resource?: vscode.Uri) => {
       const uri = resource ?? vscode.window.activeTextEditor?.document.uri;
       if (uri) await vscode.commands.executeCommand('vscode.openWith', uri, 'default');
     })
@@ -20,7 +20,7 @@ export function activate(context: vscode.ExtensionContext): void {
 
 export function deactivate(): void {}
 
-class NotionMarkdownEditorProvider implements vscode.CustomTextEditorProvider {
+class YetAnotherMarkdownEditorProvider implements vscode.CustomTextEditorProvider {
   private readonly panels = new Map<string, vscode.WebviewPanel>();
 
   constructor(private readonly context: vscode.ExtensionContext) {}
@@ -29,7 +29,7 @@ class NotionMarkdownEditorProvider implements vscode.CustomTextEditorProvider {
     const media = vscode.Uri.joinPath(this.context.extensionUri, 'media');
     const dist = vscode.Uri.joinPath(this.context.extensionUri, 'dist');
     panel.webview.options = { enableScripts: true, localResourceRoots: [media, dist] };
-    if (vscode.workspace.getConfiguration('notionMarkdownEditor').get<boolean>('showSourceOnOpen', false)) {
+    if (vscode.workspace.getConfiguration('yetAnotherMarkdownEditor').get<boolean>('showSourceOnOpen', false)) {
       await vscode.commands.executeCommand('vscode.openWith', document.uri, 'default');
       panel.dispose();
       return;
@@ -90,7 +90,7 @@ class NotionMarkdownEditorProvider implements vscode.CustomTextEditorProvider {
       lastEditorText = message.text;
       pendingText = message.text;
       if (writeTimer) clearTimeout(writeTimer);
-      const settings = vscode.workspace.getConfiguration('notionMarkdownEditor');
+      const settings = vscode.workspace.getConfiguration('yetAnotherMarkdownEditor');
       const autoSave = settings.get<boolean>('autoSave', true);
       const delay = settings.get<number>('debounceMs', 150);
       if (!autoSave) {
@@ -129,7 +129,7 @@ class NotionMarkdownEditorProvider implements vscode.CustomTextEditorProvider {
   private getHtml(webview: vscode.Webview): string {
     const nonce = createNonce();
     const script = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'dist', 'webview.js'));
-    const theme = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'media', 'notion-theme.css'));
+    const theme = webview.asWebviewUri(vscode.Uri.joinPath(this.context.extensionUri, 'media', 'editor-theme.css'));
     const csp = [`default-src 'none'`, `script-src 'nonce-${nonce}' ${script}`, `style-src ${webview.cspSource} 'unsafe-inline'`, `img-src ${webview.cspSource} data: https:`, `font-src ${webview.cspSource} data:`, `connect-src ${webview.cspSource}`].join('; ');
     return `<!doctype html><html><head><meta charset="UTF-8"><meta http-equiv="Content-Security-Policy" content="${csp}"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="${theme}"><title>Markdown Editor</title></head><body><div id="app"><div class="editor-loading">Loading Markdown editor…</div></div><script nonce="${nonce}" src="${script}"></script></body></html>`;
   }

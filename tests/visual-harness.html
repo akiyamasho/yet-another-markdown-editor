@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Notion Markdown Editor visual harness</title>
-    <link rel="stylesheet" href="/media/notion-theme.css">
+    <title>Yet Another Markdown Editor visual harness</title>
+    <link rel="stylesheet" href="/media/editor-theme.css">
     <style>
       :root {
         --vscode-editor-background: #ffffff;
@@ -21,11 +21,29 @@
         postMessage(message) {
           window.__editorMessages.push(message);
           if (message.type === 'ready') {
+            const emojiDemo = new URLSearchParams(window.location.search).get('demo') === 'emoji';
+            const markdown = emojiDemo
+              ? '# Emoji autocomplete\n\n:smil\n\nType a colon and start writing a name. Use the arrow keys and Enter to choose—no native picker required.\n\n- Fast local matching\n- Mouse and keyboard navigation\n- Works on macOS, Windows, and Linux\n'
+              : '# Yet Another Markdown Editor\n\nA calm **Markdown canvas** with *inline formatting*, ~~revisions~~, and [useful links](https://example.com).\n\n## Write naturally\n\n- [x] Edit rendered Markdown in place\n- [x] Move, copy, duplicate, or delete blocks\n- [ ] Type :rocket: for emoji autocomplete\n\n> Plain Markdown stays the source of truth.\n\n| Feature | Status |\n| --- | --- |\n| Slash commands | Ready |\n| Keyboard shortcuts | Ready |\n\n```ts\nconst portable = true;\n```\n';
             setTimeout(() => window.postMessage({
               type: 'document',
               version: 1,
-              text: '# Product notes\n\nA calm **Markdown canvas** with *inline formatting*, ~~revisions~~, and [useful links](https://example.com).\n\n## Today\n\n- [x] Build the editor\n- [ ] Try the block controls\n- [ ] Review narrow layouts\n\n> Markdown stays the source of truth.\n\n| Feature | Status |\n| --- | --- |\n| Slash menu | Ready |\n| Block actions | Ready |\n\n```ts\nconst portable = true;\n```\n'
+              text: markdown
             }, '*'), 0);
+            if (emojiDemo) {
+              setTimeout(() => {
+                const editor = document.querySelector('.ProseMirror');
+                const target = editor?.querySelector('p');
+                if (!editor || !target) return;
+                const range = document.createRange();
+                range.selectNodeContents(target);
+                range.collapse(false);
+                const selection = window.getSelection();
+                selection?.removeAllRanges();
+                selection?.addRange(range);
+                editor.dispatchEvent(new InputEvent('input', { bubbles: true, inputType: 'insertText' }));
+              }, 800);
+            }
           }
         }
       });

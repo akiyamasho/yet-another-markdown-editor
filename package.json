@@ -1,18 +1,18 @@
 {
-  "name": "notion-markdown-editor",
-  "displayName": "Notion Markdown Editor",
-  "description": "A block-oriented, Notion-like Markdown editor for Visual Studio Code.",
+  "name": "yet-another-markdown-editor",
+  "displayName": "Yet Another Markdown Editor",
+  "description": "A fast, block-oriented WYSIWYG Markdown editor for Visual Studio Code.",
   "version": "0.1.0",
-  "publisher": "notion-markdown-editor",
+  "publisher": "akiyamasho",
   "icon": "media/icon.png",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/akiyamasho/notion-markdown-editor.git"
+    "url": "https://github.com/akiyamasho/yet-another-markdown-editor.git"
   },
-  "homepage": "https://github.com/akiyamasho/notion-markdown-editor#readme",
+  "homepage": "https://github.com/akiyamasho/yet-another-markdown-editor#readme",
   "bugs": {
-    "url": "https://github.com/akiyamasho/notion-markdown-editor/issues"
+    "url": "https://github.com/akiyamasho/yet-another-markdown-editor/issues"
   },
   "engines": {
     "vscode": "^1.85.0"
@@ -22,14 +22,14 @@
     "Formatters"
   ],
   "activationEvents": [
-    "onCustomEditor:notionMarkdown.editor"
+    "onCustomEditor:yetAnotherMarkdown.editor"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "customEditors": [
       {
-        "viewType": "notionMarkdown.editor",
-        "displayName": "Notion Markdown Editor",
+        "viewType": "yetAnotherMarkdown.editor",
+        "displayName": "Yet Another Markdown Editor",
         "selector": [
           {
             "filenamePattern": "*.md"
@@ -43,24 +43,24 @@
     ],
     "commands": [
       {
-        "command": "notionMarkdown.openSource",
-        "title": "Markdown Editor: Open Source"
+        "command": "yetAnotherMarkdown.openSource",
+        "title": "Yet Another Markdown Editor: Open Source"
       }
     ],
     "configuration": {
-      "title": "Notion Markdown Editor",
+      "title": "Yet Another Markdown Editor",
       "properties": {
-        "notionMarkdownEditor.autoSave": {
+        "yetAnotherMarkdownEditor.autoSave": {
           "type": "boolean",
           "default": true,
           "description": "Automatically save edits made in the visual editor."
         },
-        "notionMarkdownEditor.showSourceOnOpen": {
+        "yetAnotherMarkdownEditor.showSourceOnOpen": {
           "type": "boolean",
           "default": false,
           "description": "Open Markdown in the source editor instead of the visual editor."
         },
-        "notionMarkdownEditor.debounceMs": {
+        "yetAnotherMarkdownEditor.debounceMs": {
           "type": "number",
           "default": 150,
           "minimum": 0,
@@ -75,7 +75,7 @@
     "typecheck": "tsc --noEmit",
     "test": "node --test --experimental-strip-types tests/*.test.ts",
     "watch": "node esbuild.js --watch",
-    "package": "npm run build && vsce package"
+    "package": "npm run build && vsce package --out yet-another-markdown-editor.vsix"
   },
   "devDependencies": {
     "@types/node": "^20.14.10",

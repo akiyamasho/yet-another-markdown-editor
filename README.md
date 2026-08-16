@@ -1,18 +1,51 @@
-# Notion Markdown Editor
+<p align="center">
+  <img src="media/logo.png" width="168" alt="Yet Another Markdown Editor logo">
+</p>
 
-A calm, block-oriented Markdown editor for VS Code. Open a `.md` or `.markdown` file in the visual editor, type as naturally as you would in a document, and keep the file as portable plain Markdown.
+# Yet Another Markdown Editor
 
-## What it does
+<p align="center">
+  A fast, block-oriented WYSIWYG Markdown editor for Visual Studio Code.<br>
+  Write like a document editor. Keep portable <code>.md</code> files.
+</p>
 
-- Renders Markdown as an editable, focused canvas instead of a source-code wall.
-- Preserves normal Markdown as the source of truth, with a raw-source fallback when a document cannot be rendered.
-- Supports headings, paragraphs, bold, italic, strikethrough, links, images, block quotes, dividers, ordered and unordered lists, task lists, tables, inline code, fenced code, and common GFM content.
-- Provides discoverable whole-block actions: copy as Markdown, duplicate, and delete. Block actions preserve editor undo history; native copy (`⌘/Ctrl+C`) remains ordinary text-selection copy.
-- Includes a compact formatting toolbar, slash-style insertion menu, status feedback, and theme-aware light, dark, and high-contrast styling.
-- Follows VS Code's editor colors and respects `prefers-reduced-motion` and forced-colors settings.
-- Offers a native-picker-free emoji autocomplete: type `:smil`, then choose a result with Arrow keys + Enter/Tab or the mouse. A complete shortcode such as `:rocket:` is replaced automatically. The popup works on macOS, Windows, and Linux and is disabled in inline/fenced code.
+<p align="center">
+  <a href="https://github.com/akiyamasho/yet-another-markdown-editor/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/akiyamasho/yet-another-markdown-editor?display_name=tag&sort=semver"></a>
+  <a href="https://github.com/akiyamasho/yet-another-markdown-editor/releases/latest/download/yet-another-markdown-editor.vsix"><img alt="Download VSIX" src="https://img.shields.io/badge/download-latest%20VSIX-6f42c1"></a>
+  <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-2ea44f"></a>
+</p>
 
-The interaction model is inspired by the useful parts of modern block editors: generous whitespace, visible controls only when a block is active, keyboard-first actions, and a stable canvas that stays readable at narrow widths. It is an original interface and does not use Notion branding or assets.
+> Not published to the VS Code Marketplace yet. Install the release artifact from GitHub: **[download the latest VSIX](https://github.com/akiyamasho/yet-another-markdown-editor/releases/latest/download/yet-another-markdown-editor.vsix)** or read the **[latest release notes](https://github.com/akiyamasho/yet-another-markdown-editor/releases/latest)**.
+
+## Edit rendered Markdown directly
+
+Open a `.md` or `.markdown` file and work in a calm document canvas. Markdown remains the source of truth, with VS Code save, undo, revert, and external-edit behavior preserved.
+
+![Rendered Markdown editing with formatting and block controls](media/screenshots/editor-overview.png)
+
+## Features
+
+- Headings, paragraphs, bold, italic, strikethrough, links, images, quotes, dividers, lists, task lists, tables, inline code, fenced code, math, and GFM content.
+- Selection formatting toolbar plus a persistent, horizontally scrollable top toolbar.
+- `/` commands and add/drag block handles.
+- Whole-block copy as Markdown, duplicate, and delete actions with undo support.
+- Fast cross-platform emoji completion: type `:smil`, navigate with the arrow keys, then press `Enter` or `Tab`. Exact shortcodes such as `:rocket:` resolve automatically.
+- VS Code light, dark, and high-contrast theme integration, responsive narrow panes, reduced-motion support, and keyboard focus states.
+- A one-click **Source** action for advanced Markdown or unsupported syntax.
+
+![Cross-platform emoji autocomplete](media/screenshots/emoji-autocomplete.png)
+
+## Install
+
+1. **[Download `yet-another-markdown-editor.vsix`](https://github.com/akiyamasho/yet-another-markdown-editor/releases/latest/download/yet-another-markdown-editor.vsix)**.
+2. In VS Code, run **Extensions: Install from VSIX…** from the Command Palette.
+3. Open a Markdown file. If VS Code remembers another editor, choose **Reopen Editor With → Yet Another Markdown Editor** once.
+
+Or install from a terminal:
+
+```sh
+code --install-extension yet-another-markdown-editor.vsix
+```
 
 ## Shortcuts
 
@@ -25,50 +58,37 @@ The interaction model is inspired by the useful parts of modern block editors: g
 | Copy active block as Markdown | `⌘ Shift C` | `Ctrl Shift C` |
 | Duplicate active block | `⌘ Shift D` | `Ctrl Shift D` |
 | Delete active block | `⌘ Shift Backspace` | `Ctrl Shift Backspace` |
-| Paste | `⌘ V` | `Ctrl V` |
 | Insert a block | Type `/` | Type `/` |
-| Emoji autocomplete | Type `:name` → Arrow keys + `Enter` / `Tab` | Type `:name` → Arrow keys + `Enter` / `Tab` |
-| Open raw Markdown | Command Palette → **Markdown Editor: Open Source** | Command Palette → **Markdown Editor: Open Source** |
+| Emoji autocomplete | Type `:name`, then arrows + `Enter` / `Tab` | Type `:name`, then arrows + `Enter` / `Tab` |
 
-The exact browser/editor shortcut behavior can vary with the active VS Code keybindings. Every formatting command is also available through the toolbar or block menu.
-
-## Use it
-
-1. Open this extension in VS Code.
-2. Open any `.md` or `.markdown` file.
-3. Choose **Notion Markdown Editor** if VS Code asks which editor to use. The extension is the default custom editor for Markdown files.
-4. Edit, then use normal VS Code save behavior. The visual editor writes back to the same file with a short debounce.
-
-To switch to source at any time, run **Markdown Editor: Open Source** from the Command Palette. Set `notionMarkdownEditor.showSourceOnOpen` to `true` if source should always open first.
+Native `⌘/Ctrl+C` remains normal selection copy. Formatting and insertion commands are also available in the editor UI.
 
 ## Settings
 
-- `notionMarkdownEditor.autoSave` — automatically save visual edits (default `true`).
-- `notionMarkdownEditor.showSourceOnOpen` — prefer the source editor when opening Markdown (default `false`).
-- `notionMarkdownEditor.debounceMs` — delay before visual changes are written (default `150`, range `0`–`2000`).
+- `yetAnotherMarkdownEditor.autoSave` — automatically save visual edits (default `true`).
+- `yetAnotherMarkdownEditor.showSourceOnOpen` — prefer the source editor when opening Markdown (default `false`).
+- `yetAnotherMarkdownEditor.debounceMs` — delay before visual changes are written (default `150`, range `0`–`2000`).
+
+Run **Yet Another Markdown Editor: Open Source** from the Command Palette to switch to raw Markdown at any time.
+
+## Markdown compatibility
+
+The extension writes Markdown, not a proprietary document format. Rendering and serialization may normalize whitespace, list markers, table alignment, or fence styles. Use the source editor for unusual front matter, raw HTML, custom directives, or syntax unsupported by the active Milkdown parser, and review diffs before committing documents with advanced embedded tooling.
 
 ## Development
 
-Requirements: VS Code 1.85 or newer and Node.js 18+.
+Requires VS Code 1.85+ and Node.js 24+ for the current TypeScript test runner.
 
 ```sh
-npm install
+npm ci
+npm test
 npm run typecheck
 npm run build
+npm run package
 ```
 
-Press `F5` in VS Code to launch an Extension Development Host, then open a Markdown file there. Use `npm run watch` while iterating on the bundle. The generated build is placed in `dist/`.
-
-To make a local VSIX, install `@vscode/vsce` and run `vsce package`, then install the resulting file with **Extensions: Install from VSIX…**. Publishing and repository creation are intentionally separate release steps.
-
-## Markdown round-trip and limitations
-
-The editor writes Markdown rather than a proprietary document format. Formatting that is not represented by the active Markdown parser, unsupported extensions, unusual front matter, raw HTML, or custom directives may be preserved best by using the source editor. Rendering and serialization can normalize whitespace, list markers, table alignment, and fence styles. Review a diff before committing documents with advanced Markdown or embedded tooling. Binary assets remain external links and are not uploaded by this extension.
-
-## Attribution
-
-The editor is built for this project with VS Code's Custom Text Editor API and the Milkdown/ProseMirror editor stack. Their respective licenses and notices apply to bundled dependencies. The visual language is an original, Notion-inspired design; Notion is a trademark of Notion Labs, Inc. and is not affiliated with this project.
+Press `F5` in VS Code to launch an Extension Development Host. The extension host uses VS Code's Custom Text Editor API; the editing surface is built with Milkdown/ProseMirror.
 
 ## License
 
-MIT. See the package metadata for the current publisher and repository details.
+MIT. Yet Another Markdown Editor is an independent project and is not affiliated with Notion Labs or Microsoft.

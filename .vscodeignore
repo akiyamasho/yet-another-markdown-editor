@@ -9,6 +9,7 @@ tsconfig.json
 package-lock.json
 .git/**
 .github/**
+AGENTS.md
 CHANGELOG.md
 
 # Keep only runtime assets in the packaged extension. Re-include directories

@@ -1,4 +1,4 @@
-/* Notion Markdown Editor — a quiet, theme-aware surface for Milkdown/ProseMirror.
+/* Yet Another Markdown Editor — a quiet, theme-aware surface for Milkdown/ProseMirror.
  * Keep component behavior in TypeScript; this file is presentation only. */
 
 :root {
@@ -173,8 +173,6 @@ img, video { display: block; max-width: 100%; height: auto; border-radius: 6px; 
   .notion-header { background: Canvas; } .block-menu, .notion-block-menu, .bubble-menu, .toolbar { border: 1px solid CanvasText; background: Canvas; }
 }
 
-/* Lightweight, keyboard-first emoji completion. It is fixed to the viewport
-   so it remains correctly positioned while the canvas scrolls. */
 .notion-emoji-popup { position: fixed; z-index: 100; width: min(280px, calc(100vw - 16px)); max-height: min(320px, 48vh); overflow: auto; padding: .3rem; border: 1px solid var(--nm-border-strong); border-radius: 9px; background: var(--nm-surface-raised); box-shadow: 0 10px 28px color-mix(in srgb, var(--nm-text) 18%, transparent); }
 .notion-emoji-option { display: flex; align-items: center; gap: .65rem; width: 100%; padding: .4rem .5rem; border: 0; border-radius: 6px; color: var(--nm-text); text-align: left; background: transparent; cursor: pointer; }
 .notion-emoji-option:hover, .notion-emoji-option[aria-selected="true"] { background: var(--nm-hover); }

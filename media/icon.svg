@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
-  <title id="title">Markdown editor</title>
-  <desc id="desc">A rounded document with a small sparkle and markdown mark</desc>
-  <rect x="8" y="8" width="112" height="112" rx="24" fill="#24292f"/>
-  <path d="M31 28h48l18 18v54a8 8 0 0 1-8 8H31a8 8 0 0 1-8-8V36a8 8 0 0 1 8-8Z" fill="#fff"/>
-  <path d="M79 28v18h18" fill="none" stroke="#d0d7de" stroke-width="4" stroke-linejoin="round"/>
-  <path d="M38 72v14m0-14 9 9 9-9v14m10-14 6 14 6-14" fill="none" stroke="#0969da" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
-  <path d="m92 58 2.2 5.8L100 66l-5.8 2.2L92 74l-2.2-5.8L84 66l5.8-2.2Z" fill="#bf8700"/>
-</svg>
