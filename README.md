@@ -1,52 +1,53 @@
 <p align="center">
-  <img src="media/logo.png" width="168" alt="Yet Another Markdown Editor logo">
+  <img src="media/logo.png" width="128" alt="Yet Another Markdown Editor logo">
 </p>
 
-# Yet Another Markdown Editor
+<h1 align="center">Yet Another Markdown Editor</h1>
 
 <p align="center">
-  Edit rendered Markdown directly in Visual Studio Code. Your file stays Markdown.
+  A rendered Markdown editor that lives inside Visual Studio Code and keeps plain text as the source of truth.
 </p>
 
 <p align="center">
-  <a href="https://github.com/akiyamasho/yet-another-markdown-editor/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/akiyamasho/yet-another-markdown-editor?display_name=tag&sort=semver"></a>
-  <a href="https://github.com/akiyamasho/yet-another-markdown-editor/releases/latest/download/yet-another-markdown-editor.vsix"><img alt="Download VSIX" src="https://img.shields.io/badge/download-latest%20VSIX-6f42c1"></a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=akiyamasho.yet-another-markdown-editor"><img alt="Visual Studio Marketplace version" src="https://img.shields.io/visual-studio-marketplace/v/akiyamasho.yet-another-markdown-editor?label=marketplace&color=6d4aff"></a>
+  <a href="https://marketplace.visualstudio.com/items?itemName=akiyamasho.yet-another-markdown-editor"><img alt="Visual Studio Marketplace installs" src="https://img.shields.io/visual-studio-marketplace/i/akiyamasho.yet-another-markdown-editor"></a>
+  <a href="https://github.com/akiyamasho/yet-another-markdown-editor/releases/latest"><img alt="Latest GitHub release" src="https://img.shields.io/github/v/release/akiyamasho/yet-another-markdown-editor?display_name=tag&sort=semver"></a>
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-2ea44f"></a>
 </p>
 
-![A Markdown document being edited as a rendered page, with formatting and block controls visible](media/screenshots/editor-overview.png)
+![Rendered Markdown editor with formatting and block controls](media/screenshots/editor-overview.png)
 
-Open a `.md` or `.markdown` file. Type, format, reorder, copy, duplicate, or delete blocks. Save the same portable text file you started with.
+## What it does
 
-## Type `:smil`
+Open a `.md` or `.markdown` file and edit the rendered document directly. Formatting, block actions, undo, save, and external file changes remain connected to the underlying Markdown document.
 
-![Emoji suggestions appearing below a partially typed shortcode](media/screenshots/emoji-autocomplete.png)
-
-Use the arrow keys and `Enter` or `Tab`, or click a result. Emoji completion runs inside the editor on macOS, Windows, and Linux, including exact shortcodes such as `:rocket:`.
-
-## Editing tools
-
-- Headings, paragraphs, bold, italic, strikethrough, links, images, quotes, dividers, lists, task lists, tables, inline code, fenced code, math, and GFM content.
-- Selection formatting toolbar and persistent top toolbar.
-- `/` insertion commands plus add and drag block handles.
-- Whole-block copy as Markdown, duplicate, and delete actions with undo support.
-- Select rendered text, then use **Codex** or **Add Rendered Selection to Codex Thread** to pass the matching source lines into Codex.
-- VS Code light, dark, and high-contrast colors, responsive narrow panes, reduced-motion support, and visible keyboard focus.
-- **Source** opens the underlying Markdown whenever you want direct control.
+- Edit headings, paragraphs, emphasis, links, images, quotes, lists, tasks, tables, code, math, and GFM content.
+- Insert content with `/`, then reorder it with block handles.
+- Copy a whole block as Markdown, duplicate it, or delete it with undo support.
+- Type an emoji shortcode such as `:rocket:` using the built-in cross-platform completion menu.
+- Select rendered text and pass its matching source lines to a Codex task.
+- Switch to the normal text editor whenever raw Markdown is the better tool.
+- Follow VS Code light, dark, and high-contrast themes with accessible keyboard focus and reduced-motion support.
 
 ## Install
 
-1. **[Download the latest VSIX](https://github.com/akiyamasho/yet-another-markdown-editor/releases/latest/download/yet-another-markdown-editor.vsix)**.
-2. In VS Code, run **Extensions: Install from VSIX…**.
-3. Open a Markdown file. If another editor opens, choose **Reopen Editor With → Yet Another Markdown Editor** once.
-
-Or install from a terminal:
+Install **Yet Another Markdown Editor** from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=akiyamasho.yet-another-markdown-editor), or run:
 
 ```sh
-code --install-extension yet-another-markdown-editor.vsix
+code --install-extension akiyamasho.yet-another-markdown-editor
 ```
 
-## Shortcuts
+For an offline installation, [download the latest VSIX](https://github.com/akiyamasho/yet-another-markdown-editor/releases/latest/download/yet-another-markdown-editor.vsix), then run **Extensions: Install from VSIX…** in VS Code.
+
+After installation, open a Markdown file. If another editor is active, choose **Reopen Editor With → Yet Another Markdown Editor**.
+
+## Emoji completion
+
+![Emoji shortcode suggestions below the caret](media/screenshots/emoji-autocomplete.png)
+
+Type `:` followed by a name. Use the arrow keys and `Enter` or `Tab`, or select a candidate with the pointer. Completion is local and works on macOS, Windows, and Linux.
+
+## Keyboard shortcuts
 
 | Action | macOS | Windows / Linux |
 | --- | --- | --- |
@@ -58,25 +59,25 @@ code --install-extension yet-another-markdown-editor.vsix
 | Duplicate active block | `⌘ Shift D` | `Ctrl Shift D` |
 | Delete active block | `⌘ Shift Backspace` | `Ctrl Shift Backspace` |
 | Insert a block | Type `/` | Type `/` |
-| Emoji autocomplete | Type `:name`, then arrows + `Enter` / `Tab` | Type `:name`, then arrows + `Enter` / `Tab` |
+| Complete an emoji | Type `:name`, then arrows + `Enter` / `Tab` | Type `:name`, then arrows + `Enter` / `Tab` |
 
-Native `⌘/Ctrl+C` remains normal selection copy.
+Normal `⌘/Ctrl+C` remains selection copy.
 
-## Settings
+## Commands and settings
 
-- `yetAnotherMarkdownEditor.autoSave` — automatically save visual edits (default `true`).
-- `yetAnotherMarkdownEditor.showSourceOnOpen` — prefer the source editor when opening Markdown (default `false`).
-- `yetAnotherMarkdownEditor.debounceMs` — delay before visual changes are written (default `150`, range `0`–`2000`).
-
-Run **Yet Another Markdown Editor: Open Source** from the Command Palette to switch to raw Markdown.
+- **Yet Another Markdown Editor: Open Source** opens the current file in VS Code's text editor.
+- **Add Rendered Selection to Codex Thread** sends the selected rendered text with its corresponding source range.
+- `yetAnotherMarkdownEditor.autoSave` saves visual edits automatically. Default: `true`.
+- `yetAnotherMarkdownEditor.showSourceOnOpen` prefers the text editor for Markdown files. Default: `false`.
+- `yetAnotherMarkdownEditor.debounceMs` controls the visual-to-source update delay. Default: `150`.
 
 ## Markdown compatibility
 
-Rendering and serialization may normalize whitespace, list markers, table alignment, or fence styles. Use the source editor for unusual front matter, raw HTML, custom directives, or syntax unsupported by the active parser. Review diffs before committing documents with advanced embedded tooling.
+Markdown remains the canonical document format. Rendering and serialization can normalize whitespace, list markers, table alignment, or fence styles. Use the source editor for unusual front matter, raw HTML, custom directives, or syntax unsupported by the active parser, and review diffs when working with advanced embedded tooling.
 
 ## Development
 
-Requires VS Code 1.85+ and Node.js 24+ for the current TypeScript test runner.
+The extension requires VS Code 1.85 or newer. Development uses Node.js 24 or newer.
 
 ```sh
 npm ci
@@ -86,8 +87,14 @@ npm run build
 npm run package
 ```
 
-Press `F5` in VS Code to launch an Extension Development Host.
+Press `F5` in VS Code to launch an Extension Development Host. Project conventions and architecture notes are in [`AGENTS.md`](AGENTS.md).
+
+## Releases and support
+
+- [Latest release](https://github.com/akiyamasho/yet-another-markdown-editor/releases/latest)
+- [Version history](CHANGELOG.md)
+- [Issue tracker](https://github.com/akiyamasho/yet-another-markdown-editor/issues)
 
 ## License
 
-MIT.
+[MIT](LICENSE)

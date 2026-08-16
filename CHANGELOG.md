@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2
+
+- Replaced the extension artwork with a minimal Markdown-focused icon.
+- Added a dedicated Marketplace description separate from the GitHub project README.
+- Fixed Marketplace screenshot and logo URL handling in packaged releases.
+
 All notable changes to this project are documented here.
 
 ## [0.1.1] — 2026-08-16

@@ -2,7 +2,7 @@
   "name": "yet-another-markdown-editor",
   "displayName": "Yet Another Markdown Editor",
   "description": "Edit Markdown in a rendered block canvas with formatting, block actions, and emoji autocomplete.",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "publisher": "akiyamasho",
   "icon": "media/icon.png",
   "license": "MIT",
@@ -101,7 +101,7 @@
     "typecheck": "tsc --noEmit",
     "test": "node --test --experimental-strip-types tests/*.test.ts",
     "watch": "node esbuild.js --watch",
-    "package": "npm run build && vsce package --no-rewrite-relative-links --out yet-another-markdown-editor.vsix"
+    "package": "npm run build && vsce package --readme-path MARKETPLACE.md --githubBranch main --out yet-another-markdown-editor.vsix"
   },
   "devDependencies": {
     "@types/node": "^20.14.10",
