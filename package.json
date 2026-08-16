@@ -1,0 +1,91 @@
+{
+  "name": "notion-markdown-editor",
+  "displayName": "Notion Markdown Editor",
+  "description": "A block-oriented, Notion-like Markdown editor for Visual Studio Code.",
+  "version": "0.1.0",
+  "publisher": "notion-markdown-editor",
+  "icon": "media/icon.png",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/akiyamasho/notion-markdown-editor.git"
+  },
+  "homepage": "https://github.com/akiyamasho/notion-markdown-editor#readme",
+  "bugs": {
+    "url": "https://github.com/akiyamasho/notion-markdown-editor/issues"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "Formatters"
+  ],
+  "activationEvents": [
+    "onCustomEditor:notionMarkdown.editor"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "customEditors": [
+      {
+        "viewType": "notionMarkdown.editor",
+        "displayName": "Notion Markdown Editor",
+        "selector": [
+          {
+            "filenamePattern": "*.md"
+          },
+          {
+            "filenamePattern": "*.markdown"
+          }
+        ],
+        "priority": "default"
+      }
+    ],
+    "commands": [
+      {
+        "command": "notionMarkdown.openSource",
+        "title": "Markdown Editor: Open Source"
+      }
+    ],
+    "configuration": {
+      "title": "Notion Markdown Editor",
+      "properties": {
+        "notionMarkdownEditor.autoSave": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically save edits made in the visual editor."
+        },
+        "notionMarkdownEditor.showSourceOnOpen": {
+          "type": "boolean",
+          "default": false,
+          "description": "Open Markdown in the source editor instead of the visual editor."
+        },
+        "notionMarkdownEditor.debounceMs": {
+          "type": "number",
+          "default": 150,
+          "minimum": 0,
+          "maximum": 2000,
+          "description": "Delay before visual-editor changes are written to the document."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "npm run typecheck && node esbuild.js",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test --experimental-strip-types tests/*.test.ts",
+    "watch": "node esbuild.js --watch",
+    "package": "npm run build && vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.10",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^3.9.2",
+    "esbuild": "^0.28.2",
+    "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "@milkdown/crepe": "^7.22.1",
+    "@milkdown/kit": "7.22.1"
+  }
+}

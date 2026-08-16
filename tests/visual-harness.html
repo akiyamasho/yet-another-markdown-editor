@@ -1,0 +1,38 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Notion Markdown Editor visual harness</title>
+    <link rel="stylesheet" href="/media/notion-theme.css">
+    <style>
+      :root {
+        --vscode-editor-background: #ffffff;
+        --vscode-editor-foreground: #242424;
+        --vscode-focusBorder: #7c3aed;
+        --vscode-textLink-foreground: #0969da;
+        --vscode-textCodeBlock-background: #f5f5f5;
+        --vscode-errorForeground: #d1242f;
+      }
+    </style>
+    <script>
+      window.__editorMessages = [];
+      window.acquireVsCodeApi = () => ({
+        postMessage(message) {
+          window.__editorMessages.push(message);
+          if (message.type === 'ready') {
+            setTimeout(() => window.postMessage({
+              type: 'document',
+              version: 1,
+              text: '# Product notes\n\nA calm **Markdown canvas** with *inline formatting*, ~~revisions~~, and [useful links](https://example.com).\n\n## Today\n\n- [x] Build the editor\n- [ ] Try the block controls\n- [ ] Review narrow layouts\n\n> Markdown stays the source of truth.\n\n| Feature | Status |\n| --- | --- |\n| Slash menu | Ready |\n| Block actions | Ready |\n\n```ts\nconst portable = true;\n```\n'
+            }, '*'), 0);
+          }
+        }
+      });
+    </script>
+  </head>
+  <body>
+    <div id="app"><div class="editor-loading">Loading Markdown editor…</div></div>
+    <script src="/dist/webview.js"></script>
+  </body>
+</html>

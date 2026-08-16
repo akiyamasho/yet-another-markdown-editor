@@ -1,0 +1,19 @@
+src/**
+tests/**
+node_modules/**
+.gitignore
+**/*.ts
+**/*.map
+esbuild.js
+tsconfig.json
+package-lock.json
+.git/**
+.github/**
+CHANGELOG.md
+
+# Keep only runtime assets in the packaged extension. Re-include directories
+# after broad source exclusions, then exclude generated source maps again.
+!dist/**
+!media/**
+dist/*.map
+media/*.svg
