@@ -1,8 +1,8 @@
 {
   "name": "yet-another-markdown-editor",
   "displayName": "Yet Another Markdown Editor",
-  "description": "A fast, block-oriented WYSIWYG Markdown editor for Visual Studio Code.",
-  "version": "0.1.0",
+  "description": "Edit Markdown in a rendered block canvas with formatting, block actions, and emoji autocomplete.",
+  "version": "0.1.1",
   "publisher": "akiyamasho",
   "icon": "media/icon.png",
   "license": "MIT",
@@ -21,6 +21,18 @@
     "Other",
     "Formatters"
   ],
+  "keywords": [
+    "markdown",
+    "wysiwyg",
+    "editor",
+    "gfm",
+    "emoji",
+    "blocks"
+  ],
+  "galleryBanner": {
+    "color": "#111827",
+    "theme": "dark"
+  },
   "activationEvents": [
     "onCustomEditor:yetAnotherMarkdown.editor"
   ],
@@ -45,8 +57,22 @@
       {
         "command": "yetAnotherMarkdown.openSource",
         "title": "Yet Another Markdown Editor: Open Source"
+      },
+      {
+        "command": "yetAnotherMarkdown.addSelectionToCodex",
+        "title": "Add Rendered Selection to Codex Thread",
+        "category": "Yet Another Markdown Editor"
       }
     ],
+    "menus": {
+      "webview/context": [
+        {
+          "command": "yetAnotherMarkdown.addSelectionToCodex",
+          "when": "webviewId == 'yetAnotherMarkdown.editor'",
+          "group": "codex@1"
+        }
+      ]
+    },
     "configuration": {
       "title": "Yet Another Markdown Editor",
       "properties": {
@@ -75,7 +101,7 @@
     "typecheck": "tsc --noEmit",
     "test": "node --test --experimental-strip-types tests/*.test.ts",
     "watch": "node esbuild.js --watch",
-    "package": "npm run build && vsce package --out yet-another-markdown-editor.vsix"
+    "package": "npm run build && vsce package --no-rewrite-relative-links --out yet-another-markdown-editor.vsix"
   },
   "devDependencies": {
     "@types/node": "^20.14.10",

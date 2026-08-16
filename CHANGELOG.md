@@ -2,6 +2,16 @@
 
 All notable changes to this project are documented here.
 
+## [0.1.1] — 2026-08-16
+
+### Changed
+
+- Reworked the README and extension details page around large product screenshots.
+- Replaced legacy internal UI names with project-owned identifiers.
+- Expanded extension search metadata and presentation settings.
+- Increased document width, font size, line height, block spacing, and code/table padding for a calmer reading surface.
+- Added a rendered-selection bridge for the Codex editor command, with toolbar and context-menu access.
+
 ## [0.1.0] — 2026-08-16
 
 ### Added

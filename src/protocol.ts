@@ -5,6 +5,8 @@ export type EditorToHostMessage =
   | { type: 'openSource' }
   | { type: 'requestDocument' }
   | { type: 'focus' }
+  | { type: 'selection'; text: string }
+  | { type: 'addToCodex' }
   | { type: 'status'; message: string };
 
 export type HostToEditorMessage =
@@ -16,12 +18,14 @@ export function isEditorToHostMessage(value: unknown): value is EditorToHostMess
   if (!value || typeof value !== 'object' || Array.isArray(value) || !('type' in value)) return false;
   const message = value as { type?: unknown; text?: unknown; message?: unknown };
   switch (message.type) {
-    case 'update': return typeof message.text === 'string';
+    case 'update':
+    case 'selection': return typeof message.text === 'string';
     case 'status': return typeof message.message === 'string';
     case 'ready':
     case 'openSource':
     case 'requestDocument':
     case 'focus':
+    case 'addToCodex':
     case 'save':
       return Object.keys(message).length === 1;
     default: return false;

@@ -5,8 +5,7 @@
 # Yet Another Markdown Editor
 
 <p align="center">
-  A fast, block-oriented WYSIWYG Markdown editor for Visual Studio Code.<br>
-  Write like a document editor. Keep portable <code>.md</code> files.
+  Edit rendered Markdown directly in Visual Studio Code. Your file stays Markdown.
 </p>
 
 <p align="center">
@@ -15,31 +14,31 @@
   <a href="LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-2ea44f"></a>
 </p>
 
-> Not published to the VS Code Marketplace yet. Install the release artifact from GitHub: **[download the latest VSIX](https://github.com/akiyamasho/yet-another-markdown-editor/releases/latest/download/yet-another-markdown-editor.vsix)** or read the **[latest release notes](https://github.com/akiyamasho/yet-another-markdown-editor/releases/latest)**.
+![A Markdown document being edited as a rendered page, with formatting and block controls visible](media/screenshots/editor-overview.png)
 
-## Edit rendered Markdown directly
+Open a `.md` or `.markdown` file. Type, format, reorder, copy, duplicate, or delete blocks. Save the same portable text file you started with.
 
-Open a `.md` or `.markdown` file and work in a calm document canvas. Markdown remains the source of truth, with VS Code save, undo, revert, and external-edit behavior preserved.
+## Type `:smil`
 
-![Rendered Markdown editing with formatting and block controls](media/screenshots/editor-overview.png)
+![Emoji suggestions appearing below a partially typed shortcode](media/screenshots/emoji-autocomplete.png)
 
-## Features
+Use the arrow keys and `Enter` or `Tab`, or click a result. Emoji completion runs inside the editor on macOS, Windows, and Linux, including exact shortcodes such as `:rocket:`.
+
+## Editing tools
 
 - Headings, paragraphs, bold, italic, strikethrough, links, images, quotes, dividers, lists, task lists, tables, inline code, fenced code, math, and GFM content.
-- Selection formatting toolbar plus a persistent, horizontally scrollable top toolbar.
-- `/` commands and add/drag block handles.
+- Selection formatting toolbar and persistent top toolbar.
+- `/` insertion commands plus add and drag block handles.
 - Whole-block copy as Markdown, duplicate, and delete actions with undo support.
-- Fast cross-platform emoji completion: type `:smil`, navigate with the arrow keys, then press `Enter` or `Tab`. Exact shortcodes such as `:rocket:` resolve automatically.
-- VS Code light, dark, and high-contrast theme integration, responsive narrow panes, reduced-motion support, and keyboard focus states.
-- A one-click **Source** action for advanced Markdown or unsupported syntax.
-
-![Cross-platform emoji autocomplete](media/screenshots/emoji-autocomplete.png)
+- Select rendered text, then use **Codex** or **Add Rendered Selection to Codex Thread** to pass the matching source lines into Codex.
+- VS Code light, dark, and high-contrast colors, responsive narrow panes, reduced-motion support, and visible keyboard focus.
+- **Source** opens the underlying Markdown whenever you want direct control.
 
 ## Install
 
-1. **[Download `yet-another-markdown-editor.vsix`](https://github.com/akiyamasho/yet-another-markdown-editor/releases/latest/download/yet-another-markdown-editor.vsix)**.
-2. In VS Code, run **Extensions: Install from VSIX…** from the Command Palette.
-3. Open a Markdown file. If VS Code remembers another editor, choose **Reopen Editor With → Yet Another Markdown Editor** once.
+1. **[Download the latest VSIX](https://github.com/akiyamasho/yet-another-markdown-editor/releases/latest/download/yet-another-markdown-editor.vsix)**.
+2. In VS Code, run **Extensions: Install from VSIX…**.
+3. Open a Markdown file. If another editor opens, choose **Reopen Editor With → Yet Another Markdown Editor** once.
 
 Or install from a terminal:
 
@@ -61,7 +60,7 @@ code --install-extension yet-another-markdown-editor.vsix
 | Insert a block | Type `/` | Type `/` |
 | Emoji autocomplete | Type `:name`, then arrows + `Enter` / `Tab` | Type `:name`, then arrows + `Enter` / `Tab` |
 
-Native `⌘/Ctrl+C` remains normal selection copy. Formatting and insertion commands are also available in the editor UI.
+Native `⌘/Ctrl+C` remains normal selection copy.
 
 ## Settings
 
@@ -69,11 +68,11 @@ Native `⌘/Ctrl+C` remains normal selection copy. Formatting and insertion comm
 - `yetAnotherMarkdownEditor.showSourceOnOpen` — prefer the source editor when opening Markdown (default `false`).
 - `yetAnotherMarkdownEditor.debounceMs` — delay before visual changes are written (default `150`, range `0`–`2000`).
 
-Run **Yet Another Markdown Editor: Open Source** from the Command Palette to switch to raw Markdown at any time.
+Run **Yet Another Markdown Editor: Open Source** from the Command Palette to switch to raw Markdown.
 
 ## Markdown compatibility
 
-The extension writes Markdown, not a proprietary document format. Rendering and serialization may normalize whitespace, list markers, table alignment, or fence styles. Use the source editor for unusual front matter, raw HTML, custom directives, or syntax unsupported by the active Milkdown parser, and review diffs before committing documents with advanced embedded tooling.
+Rendering and serialization may normalize whitespace, list markers, table alignment, or fence styles. Use the source editor for unusual front matter, raw HTML, custom directives, or syntax unsupported by the active parser. Review diffs before committing documents with advanced embedded tooling.
 
 ## Development
 
@@ -87,8 +86,8 @@ npm run build
 npm run package
 ```
 
-Press `F5` in VS Code to launch an Extension Development Host. The extension host uses VS Code's Custom Text Editor API; the editing surface is built with Milkdown/ProseMirror.
+Press `F5` in VS Code to launch an Extension Development Host.
 
 ## License
 
-MIT. Yet Another Markdown Editor is an independent project and is not affiliated with Notion Labs or Microsoft.
+MIT.

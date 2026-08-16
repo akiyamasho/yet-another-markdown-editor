@@ -49,15 +49,30 @@ if (root) {
   // Keep Crepe's structural CSS before our VS Code-aware theme so the latter
   // can intentionally override typography, colors, and compact layout.
   document.head.insertBefore(style, document.head.querySelector('link[rel="stylesheet"]'));
-  root.innerHTML = `<div class="notion-shell"><header class="notion-header" role="toolbar" aria-label="Markdown editor"><span class="notion-title">Yet Another Markdown</span><span class="notion-header-spacer"></span><span id="editor-status" class="notion-status">Loading…</span><div class="notion-toolbar"><button id="copy-block" type="button" title="Copy block (⌘/Ctrl+Shift+C)" aria-label="Copy block">Copy block</button><button id="duplicate-block" type="button" title="Duplicate block (⌘/Ctrl+Shift+D)" aria-label="Duplicate block">Duplicate</button><button id="delete-block" type="button" title="Delete block (⌘/Ctrl+Shift+Backspace)" aria-label="Delete block">Delete</button><button id="open-source" type="button" title="Open Markdown source">Source</button><button id="editor-help" type="button" title="Keyboard shortcuts" aria-label="Keyboard shortcuts">?</button></div></header><main class="notion-canvas"><section id="editor" class="notion-editor" aria-label="Markdown document"></section></main></div>`;
+  root.innerHTML = `<div class="yame-shell"><header class="yame-header" role="toolbar" aria-label="Markdown editor"><span class="yame-title">Yet Another Markdown</span><span class="yame-header-spacer"></span><span id="editor-status" class="yame-status">Loading…</span><div class="yame-toolbar"><button id="copy-block" type="button" title="Copy block (⌘/Ctrl+Shift+C)" aria-label="Copy block">Copy block</button><button id="duplicate-block" type="button" title="Duplicate block (⌘/Ctrl+Shift+D)" aria-label="Duplicate block">Duplicate</button><button id="delete-block" type="button" title="Delete block (⌘/Ctrl+Shift+Backspace)" aria-label="Delete block">Delete</button><button id="add-to-codex" type="button" title="Add the selected text to a Codex thread">Codex</button><button id="open-source" type="button" title="Open Markdown source">Source</button><button id="editor-help" type="button" title="Keyboard shortcuts" aria-label="Keyboard shortcuts">?</button></div></header><main class="yame-canvas"><section id="editor" class="yame-editor" aria-label="Markdown document"></section></main></div>`;
   document.getElementById('open-source')?.addEventListener('click', () => vscode.postMessage({ type: 'openSource' }));
   document.getElementById('copy-block')?.addEventListener('click', () => void copyActiveBlock());
   document.getElementById('duplicate-block')?.addEventListener('click', () => duplicateActiveBlock());
   document.getElementById('delete-block')?.addEventListener('click', () => deleteActiveBlock());
+  document.getElementById('add-to-codex')?.addEventListener('click', () => vscode.postMessage({ type: 'addToCodex' }));
   document.getElementById('editor-help')?.addEventListener('click', () => {
     setStatus('⌘/Ctrl+Shift+C copy · D duplicate · Backspace delete · ⌘/Ctrl+B bold · / commands', 'info');
   });
 }
+
+let selectionFrame = 0;
+document.addEventListener('selectionchange', () => {
+  cancelAnimationFrame(selectionFrame);
+  selectionFrame = requestAnimationFrame(() => {
+    const selection = window.getSelection();
+    const editor = document.querySelector('.ProseMirror');
+    const anchor = selection?.anchorNode;
+    const text = selection && !selection.isCollapsed && editor && anchor && editor.contains(anchor)
+      ? selection.toString()
+      : '';
+    vscode.postMessage({ type: 'selection', text });
+  });
+});
 
 function setStatus(message: string, kind: 'info' | 'success' | 'error' = 'info'): void {
   const status = document.getElementById('editor-status');

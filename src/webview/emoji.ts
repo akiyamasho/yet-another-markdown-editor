@@ -91,12 +91,12 @@ export class EmojiAutocomplete {
   private render(): void {
     if (!this.view || !this.trigger) return;
     if (!this.popup) {
-      this.popup = document.createElement('div'); this.popup.className = 'notion-emoji-popup'; this.popup.setAttribute('role', 'listbox'); this.popup.id = 'notion-emoji-list';
+      this.popup = document.createElement('div'); this.popup.className = 'yame-emoji-popup'; this.popup.setAttribute('role', 'listbox'); this.popup.id = 'yame-emoji-list';
       document.body.appendChild(this.popup);
     }
     this.popup.replaceChildren(...this.results.map((entry, index) => {
-      const button = document.createElement('button'); button.type = 'button'; button.className = 'notion-emoji-option'; button.setAttribute('role', 'option'); button.setAttribute('aria-selected', String(index === this.selected));
-      button.innerHTML = `<span class="notion-emoji-glyph">${entry.emoji}</span><span class="notion-emoji-label"><span>${entry.label}</span><small>:${entry.shortcode}:</small></span>`;
+      const button = document.createElement('button'); button.type = 'button'; button.className = 'yame-emoji-option'; button.setAttribute('role', 'option'); button.setAttribute('aria-selected', String(index === this.selected));
+      button.innerHTML = `<span class="yame-emoji-glyph">${entry.emoji}</span><span class="yame-emoji-label"><span>${entry.label}</span><small>:${entry.shortcode}:</small></span>`;
       button.addEventListener('mousedown', event => { event.preventDefault(); this.choose(index); }); return button;
     }));
     const coords = this.view.coordsAtPos(this.view.state.selection.from);
