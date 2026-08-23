@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { EditorToHostMessage, HostToEditorMessage, isEditorToHostMessage } from './protocol';
 import { findSelectedLineRange } from './selection';
-import { isExternalDocumentChange } from './sync';
+import { clearPendingTextIfPersisted, isExternalDocumentChange } from './sync';
 
 const VIEW_TYPE = 'yetAnotherMarkdown.editor';
 
@@ -52,6 +52,10 @@ class YetAnotherMarkdownEditorProvider implements vscode.CustomTextEditorProvide
     let writeTimer: ReturnType<typeof setTimeout> | undefined;
     let disposed = false;
     let pendingText: string | undefined;
+    // WorkspaceEdit changes can echo asynchronously, after a newer update has
+    // already arrived. Keep every editor write in flight so those echoes are
+    // never mistaken for an external document edit.
+    const inFlightEditorWrites = new Set<string>();
     let lastEditorText = document.getText();
     const send = (message: HostToEditorMessage) => { if (!disposed) void panel.webview.postMessage(message); };
     const sync = () => send({ type: 'document', text: document.getText(), version: document.version });
@@ -59,7 +63,7 @@ class YetAnotherMarkdownEditorProvider implements vscode.CustomTextEditorProvide
     const documentListener = vscode.workspace.onDidChangeTextDocument((event) => {
       if (event.document.uri.toString() !== key) return;
       const text = event.document.getText();
-      if (isExternalDocumentChange(text, lastEditorText, pendingText)) {
+      if (isExternalDocumentChange(text, lastEditorText, pendingText, inFlightEditorWrites)) {
         pendingText = undefined;
         lastEditorText = text;
         session.latestText = text;
@@ -90,18 +94,21 @@ class YetAnotherMarkdownEditorProvider implements vscode.CustomTextEditorProvide
         if (text === undefined || text === document.getText()) {
           if (await document.save()) send({ type: 'status', message: 'Saved', kind: 'success' });
           else send({ type: 'error', message: 'VS Code could not save the document.' });
-          pendingText = undefined;
+          pendingText = clearPendingTextIfPersisted(pendingText, text ?? document.getText());
           return;
         }
         const edit = new vscode.WorkspaceEdit();
         edit.replace(document.uri, new vscode.Range(document.positionAt(0), document.positionAt(document.getText().length)), text);
+        inFlightEditorWrites.add(text);
         try {
           if (!await vscode.workspace.applyEdit(edit)) throw new Error('VS Code rejected the document edit.');
           if (!await document.save()) throw new Error('VS Code could not save the document.');
-          pendingText = undefined;
+          pendingText = clearPendingTextIfPersisted(pendingText, text);
           send({ type: 'status', message: 'Saved', kind: 'success' });
         } catch (error) {
           send({ type: 'error', message: error instanceof Error ? error.message : String(error) });
+        } finally {
+          inFlightEditorWrites.delete(text);
         }
         return;
       }
@@ -121,19 +128,22 @@ class YetAnotherMarkdownEditorProvider implements vscode.CustomTextEditorProvide
         if (disposed) return;
         if (document.getText() === message.text) {
           if (!await document.save()) send({ type: 'error', message: 'VS Code could not save the document.' });
-          else { pendingText = undefined; send({ type: 'status', message: 'Saved', kind: 'success' }); }
+          else { pendingText = clearPendingTextIfPersisted(pendingText, message.text); send({ type: 'status', message: 'Saved', kind: 'success' }); }
           return;
         }
         const edit = new vscode.WorkspaceEdit();
         edit.replace(document.uri, new vscode.Range(document.positionAt(0), document.positionAt(document.getText().length)), message.text);
+        inFlightEditorWrites.add(message.text);
         try {
           const applied = await vscode.workspace.applyEdit(edit);
           if (!applied) throw new Error('VS Code rejected the document edit.');
           if (!await document.save()) throw new Error('VS Code could not save the document.');
-          pendingText = undefined;
+          pendingText = clearPendingTextIfPersisted(pendingText, message.text);
           send({ type: 'status', message: 'Saved', kind: 'success' });
         } catch (error) {
           send({ type: 'error', message: error instanceof Error ? error.message : String(error) });
+        } finally {
+          inFlightEditorWrites.delete(message.text);
         }
       }, Math.max(0, delay));
     });

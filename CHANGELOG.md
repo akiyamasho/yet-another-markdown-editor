@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.5
+
+- Fixed cursor loss during editor synchronization and external document remounts.
+
 ## 0.1.4
 
 - Removed the persistent top bars and their redundant controls.

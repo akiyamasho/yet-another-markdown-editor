@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import { isExternalDocumentChange, isSaveShortcut, shouldMountHostDocument } from '../src/sync.ts';
+import { clearPendingTextIfPersisted, isExternalDocumentChange, isSaveShortcut, shouldMountHostDocument } from '../src/sync.ts';
 
 test('an empty initial document still mounts Crepe', () => {
   assert.equal(shouldMountHostDocument(false, undefined, '', ''), true);
@@ -13,6 +13,14 @@ test('external document changes sync, while WorkspaceEdit echoes do not', () => 
   assert.equal(isExternalDocumentChange('# external', '# local', '# pending'), true);
   assert.equal(isExternalDocumentChange('# pending', '# pending', '# pending'), false);
   assert.equal(isExternalDocumentChange('# pending', '# local', '# pending'), false);
+  assert.equal(isExternalDocumentChange('# older', '# newer', '# newer', new Set(['# older'])), false);
+  assert.equal(isExternalDocumentChange('# external', '# newer', '# newer', new Set(['# older'])), true);
+});
+
+test('an older save completion cannot clear newer pending editor text', () => {
+  assert.equal(clearPendingTextIfPersisted('# newer', '# older'), '# newer');
+  assert.equal(clearPendingTextIfPersisted('# older', '# older'), undefined);
+  assert.equal(clearPendingTextIfPersisted(undefined, '# older'), undefined);
 });
 
 test('Cmd/Ctrl+S is recognized and unrelated shortcuts are ignored', () => {
@@ -44,6 +52,6 @@ test('inline code uses editor contrast colors and code blocks keep their own sty
 test('host save paths persist via document.save after applying edits', () => {
   const extension = fs.readFileSync(path.join(process.cwd(), 'src/extension.ts'), 'utf8');
   assert.match(extension, /applyEdit\(edit\)[\s\S]{0,220}document\.save\(\)/);
-  assert.match(extension, /await document\.save\(\)[\s\S]{0,120}pendingText = undefined/);
+  assert.match(extension, /await document\.save\(\)[\s\S]{0,180}clearPendingTextIfPersisted/);
   assert.match(extension, /Unsaved changes \(press Ctrl\/Cmd\+S to save\)/);
 });

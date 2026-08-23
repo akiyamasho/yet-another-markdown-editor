@@ -20,3 +20,14 @@ test('webview disables both persistent top bars and uses absolute heading shortc
   assert.match(behavior, /inputRuleSource\(rule/);
   assert.match(behavior, /key: 'Backspace'/);
 });
+
+test('external remounts preserve a focused, clamped ProseMirror selection', () => {
+  const source = fs.readFileSync('src/webview/index.ts', 'utf8');
+  assert.match(source, /snapshotSelection\(\)/);
+  assert.match(source, /view\.state\.selection\.anchor/);
+  assert.match(source, /view\.state\.selection\.head/);
+  assert.match(source, /TextSelection\.create/);
+  assert.match(source, /TextSelection\.near/);
+  assert.match(source, /view\.dom\.focus\(\{ preventScroll: true \}\)/);
+  assert.match(source, /restoreSelection\(previousSelection\)/);
+});

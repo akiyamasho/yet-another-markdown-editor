@@ -13,6 +13,8 @@ import tableStyles from '@milkdown/crepe/theme/common/table.css';
 import latexStyles from '@milkdown/crepe/theme/common/latex.css';
 import crepeStyles from '@milkdown/crepe/theme/frame.css';
 import { editorViewCtx, serializerCtx } from '@milkdown/kit/core';
+import { TextSelection } from '@milkdown/kit/prose/state';
+import type { Selection } from '@milkdown/kit/prose/state';
 import type { EditorToHostMessage, HostToEditorMessage } from '../protocol';
 import { isSaveShortcut, shouldMountHostDocument } from '../sync';
 import { EmojiAutocomplete } from './emoji';
@@ -27,6 +29,43 @@ let currentText = '';
 let applyingHostDocument = false;
 let ready = false;
 const emojiAutocomplete = new EmojiAutocomplete();
+
+type SelectionSnapshot = { anchor: number; head: number; focused: boolean };
+
+function snapshotSelection(): SelectionSnapshot | undefined {
+  if (!crepe) return undefined;
+  try {
+    return crepe.editor.action((ctx) => {
+      const view = ctx.get(editorViewCtx);
+      return { anchor: view.state.selection.anchor, head: view.state.selection.head, focused: view.hasFocus() };
+    });
+  } catch { return undefined; }
+}
+
+function restoreSelection(snapshot: SelectionSnapshot | undefined): void {
+  if (!snapshot || !crepe) return;
+  try {
+    crepe.editor.action((ctx) => {
+      const view = ctx.get(editorViewCtx);
+      const max = Math.max(1, view.state.doc.content.size - 1);
+      const anchor = Math.max(1, Math.min(snapshot.anchor, max));
+      const head = Math.max(1, Math.min(snapshot.head, max));
+      let selection: Selection;
+      try {
+        selection = TextSelection.create(view.state.doc, anchor, head);
+      } catch {
+        selection = TextSelection.near(view.state.doc.resolve(anchor));
+      }
+      view.dispatch(view.state.tr.setSelection(selection));
+      if (snapshot.focused) {
+        // Native focus with preventScroll avoids jumping the canvas while the
+        // remounted document is restoring the user's caret.
+        view.dom.focus({ preventScroll: true });
+        view.focus();
+      }
+    });
+  } catch { /* A concurrently disposed editor can no longer be restored. */ }
+}
 
 if (root) {
   const style = document.createElement('style');
@@ -72,6 +111,7 @@ function setStatus(message: string, kind: 'info' | 'success' | 'error' = 'info')
 
 async function mount(text: string): Promise<void> {
   if (!root) return;
+  const previousSelection = snapshotSelection();
   emojiAutocomplete.destroy();
   if (crepe) await crepe.destroy();
   const editorRoot = document.getElementById('editor');
@@ -111,6 +151,7 @@ async function mount(text: string): Promise<void> {
     // Install after Crepe creates its ProseMirror view. The helper owns all
     // listeners and is safe to tear down when an external document remounts.
     crepe.editor.action((ctx) => emojiAutocomplete.attach(ctx.get(editorViewCtx)));
+    restoreSelection(previousSelection);
     ready = true;
     applyingHostDocument = false;
     setStatus('Ready', 'success');
