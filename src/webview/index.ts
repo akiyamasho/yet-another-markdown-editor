@@ -11,12 +11,12 @@ import placeholderStyles from '@milkdown/crepe/theme/common/placeholder.css';
 import toolbarStyles from '@milkdown/crepe/theme/common/toolbar.css';
 import tableStyles from '@milkdown/crepe/theme/common/table.css';
 import latexStyles from '@milkdown/crepe/theme/common/latex.css';
-import topBarStyles from '@milkdown/crepe/theme/common/top-bar.css';
 import crepeStyles from '@milkdown/crepe/theme/frame.css';
 import { editorViewCtx, serializerCtx } from '@milkdown/kit/core';
 import type { EditorToHostMessage, HostToEditorMessage } from '../protocol';
 import { isSaveShortcut, shouldMountHostDocument } from '../sync';
 import { EmojiAutocomplete } from './emoji';
+import { isFindShortcut, notionHeadingBehavior } from './editor-behavior';
 
 declare function acquireVsCodeApi(): { postMessage(message: EditorToHostMessage): void };
 
@@ -43,21 +43,12 @@ if (root) {
     toolbarStyles,
     tableStyles,
     latexStyles,
-    topBarStyles,
     crepeStyles
   ].join('\n');
   // Keep Crepe's structural CSS before our VS Code-aware theme so the latter
   // can intentionally override typography, colors, and compact layout.
   document.head.insertBefore(style, document.head.querySelector('link[rel="stylesheet"]'));
-  root.innerHTML = `<div class="yame-shell"><header class="yame-header" role="toolbar" aria-label="Markdown editor"><span class="yame-title">Yet Another Markdown</span><span class="yame-header-spacer"></span><span id="editor-status" class="yame-status">Loading…</span><div class="yame-toolbar"><button id="copy-block" type="button" title="Copy block (⌘/Ctrl+Shift+C)" aria-label="Copy block">Copy block</button><button id="duplicate-block" type="button" title="Duplicate block (⌘/Ctrl+Shift+D)" aria-label="Duplicate block">Duplicate</button><button id="delete-block" type="button" title="Delete block (⌘/Ctrl+Shift+Backspace)" aria-label="Delete block">Delete</button><button id="add-to-codex" type="button" title="Add the selected text to a Codex thread">Codex</button><button id="open-source" type="button" title="Open Markdown source">Source</button><button id="editor-help" type="button" title="Keyboard shortcuts" aria-label="Keyboard shortcuts">?</button></div></header><main class="yame-canvas"><section id="editor" class="yame-editor" aria-label="Markdown document"></section></main></div>`;
-  document.getElementById('open-source')?.addEventListener('click', () => vscode.postMessage({ type: 'openSource' }));
-  document.getElementById('copy-block')?.addEventListener('click', () => void copyActiveBlock());
-  document.getElementById('duplicate-block')?.addEventListener('click', () => duplicateActiveBlock());
-  document.getElementById('delete-block')?.addEventListener('click', () => deleteActiveBlock());
-  document.getElementById('add-to-codex')?.addEventListener('click', () => vscode.postMessage({ type: 'addToCodex' }));
-  document.getElementById('editor-help')?.addEventListener('click', () => {
-    setStatus('⌘/Ctrl+Shift+C copy · D duplicate · Backspace delete · ⌘/Ctrl+B bold · / commands', 'info');
-  });
+  root.innerHTML = `<div class="yame-shell"><main class="yame-canvas"><section id="editor" class="yame-editor" aria-label="Markdown document"></section></main></div>`;
 }
 
 let selectionFrame = 0;
@@ -91,11 +82,9 @@ async function mount(text: string): Promise<void> {
   crepe = new Crepe({
     root: editorRoot,
     defaultValue: text,
-    // Crepe ships block handles, slash commands, selection toolbar, headings,
-    // lists, tables, code blocks, links, images, and the persistent top bar.
-    // TopBar is intentionally opt-in in Crepe; enable it for discoverable
-    // formatting and block insertion controls.
-    features: { [Crepe.Feature.AI]: false, [Crepe.Feature.TopBar]: true },
+    // Crepe's TopBar is intentionally disabled; keyboard shortcuts are the
+    // editor's primary command surface.
+    features: { [Crepe.Feature.AI]: false, [Crepe.Feature.TopBar]: false },
     featureConfigs: {
       [Crepe.Feature.ImageBlock]: {
         onUpload: readFileAsDataUrl,
@@ -106,6 +95,7 @@ async function mount(text: string): Promise<void> {
       [Crepe.Feature.Placeholder]: { text: 'Type / for commands…' }
     }
   });
+  crepe.editor.use(notionHeadingBehavior);
   crepe.on((listener) => listener.markdownUpdated((_ctx, markdown) => {
     if (applyingHostDocument || markdown === currentText) return;
     currentText = markdown;
@@ -222,6 +212,12 @@ window.addEventListener('message', async (event: MessageEvent<HostToEditorMessag
 });
 
 window.addEventListener('keydown', (event) => {
+  if (isFindShortcut(event)) {
+    // Let the host/browser native find action run. Stopping propagation keeps
+    // editor plugins from consuming Mod/Ctrl-F without cancelling the default.
+    event.stopPropagation();
+    return;
+  }
   if ((event.metaKey || event.ctrlKey) && event.shiftKey && !event.altKey) {
     if (event.key.toLowerCase() === 'c') { event.preventDefault(); void copyActiveBlock(); return; }
     if (event.key.toLowerCase() === 'd') { event.preventDefault(); duplicateActiveBlock(); return; }

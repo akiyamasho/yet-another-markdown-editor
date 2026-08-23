@@ -34,6 +34,13 @@ test('packaged webview resources are referenced by CSP and ignored sources are e
   assert.match(ignore, /^src\/\*\*$/m);
 });
 
+test('inline code uses editor contrast colors and code blocks keep their own styling', () => {
+  const theme = fs.readFileSync(path.join(process.cwd(), 'media/editor-theme.css'), 'utf8');
+  assert.match(theme, /--nm-inline-code-bg:/);
+  assert.match(theme, /\.ProseMirror code[\s\S]{0,300}color: var\(--nm-text\) !important/);
+  assert.match(theme, /\.ProseMirror pre code[\s\S]{0,220}background: none !important/);
+});
+
 test('host save paths persist via document.save after applying edits', () => {
   const extension = fs.readFileSync(path.join(process.cwd(), 'src/extension.ts'), 'utf8');
   assert.match(extension, /applyEdit\(edit\)[\s\S]{0,220}document\.save\(\)/);

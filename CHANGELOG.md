@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.4
+
+- Removed the persistent top bars and their redundant controls.
+- Restored reliable native Cmd/Ctrl+F find behavior.
+- Added Notion-style absolute heading shortcuts for `#` through `######`.
+
+## 0.1.3
+
+- Improved inline-code contrast across light, dark, and high-contrast VS Code themes.
+- Isolated inline-code styling from fenced code blocks so syntax highlighting remains intact.
+
 ## 0.1.2
 
 - Replaced the extension artwork with a minimal Markdown-focused icon.

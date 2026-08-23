@@ -18,6 +18,8 @@
   --nm-focus: var(--vscode-focusBorder, #7c3aed);
   --nm-danger: var(--vscode-errorForeground, #d1242f);
   --nm-code-bg: color-mix(in srgb, var(--vscode-textCodeBlock-background, #f5f5f5) 88%, var(--nm-page));
+  --nm-inline-code-bg: color-mix(in srgb, var(--nm-text) 11%, var(--nm-page));
+  --nm-inline-code-border: color-mix(in srgb, var(--nm-text) 16%, transparent);
   --nm-selection: color-mix(in srgb, var(--nm-focus) 25%, transparent);
   --nm-radius: 7px;
   --nm-block-gap: .72rem;
@@ -44,21 +46,7 @@ button, input { font: inherit; }
 button { color: inherit; }
 
 .yame-shell { min-height: 100vh; display: flex; flex-direction: column; }
-.yame-header {
-  position: sticky; top: 0; z-index: 5; display: flex; align-items: center; gap: .65rem;
-  min-height: 52px; padding: .55rem var(--nm-gutter); border-bottom: 1px solid var(--nm-border);
-  background: color-mix(in srgb, var(--nm-page) 90%, transparent); backdrop-filter: blur(12px);
-}
-.yame-title { min-width: 0; overflow: hidden; color: var(--nm-muted); font-size: .86rem; text-overflow: ellipsis; white-space: nowrap; }
-.yame-header-spacer { flex: 1; }
-.yame-status { color: var(--nm-muted); font-size: .78rem; }
-.yame-toolbar { display: flex; align-items: center; gap: .3rem; overflow-x: auto; }
-.yame-toolbar button, .yame-menu-button {
-  border: 0; border-radius: var(--nm-radius); padding: .42rem .62rem; background: transparent; cursor: pointer; white-space: nowrap;
-}
-.yame-toolbar button:hover, .yame-menu-button:hover { background: var(--nm-hover); }
-
-.yame-canvas { width: 100%; flex: 1; padding: clamp(3rem, 5vw, 4.5rem) var(--nm-gutter) 9rem; }
+.yame-canvas { width: 100%; flex: 1; padding: clamp(1.5rem, 3vw, 2.5rem) var(--nm-gutter) 9rem; }
 .yame-editor, .milkdown, .editor { width: min(100%, var(--nm-content-width)); margin: 0 auto; }
 .yame-editor .milkdown {
   --crepe-color-background: var(--nm-page);
@@ -73,17 +61,6 @@ button { color: inherit; }
   --crepe-font-title: var(--nm-font-sans);
   --crepe-font-default: var(--nm-font-sans);
   --crepe-font-code: var(--nm-font-mono);
-}
-.yame-editor .milkdown .milkdown-top-bar {
-  top: 52px;
-  flex-wrap: nowrap;
-  overflow-x: auto;
-  padding-block: .4rem;
-}
-.yame-editor .milkdown .milkdown-top-bar .top-bar-inner {
-  width: max-content;
-  flex-wrap: nowrap;
-  gap: .25rem;
 }
 .yame-editor .ProseMirror, .milkdown .ProseMirror, .editor .ProseMirror {
   min-height: 65vh; padding: 2.75rem clamp(2rem, 4.5vw, 4rem); font-size: 17px; caret-color: var(--nm-focus); outline: 0; white-space: pre-wrap; overflow-wrap: anywhere;
@@ -132,9 +109,23 @@ li[data-checked], li.task-list-item { display: flex; gap: .55rem; align-items: f
 li[data-checked] > input, li.task-list-item > input { width: 1rem; height: 1rem; margin-top: .42rem; accent-color: var(--nm-focus); flex: 0 0 auto; }
 li[data-checked="true"] > p, li.task-list-item:has(input:checked) > p { color: var(--nm-muted); text-decoration: line-through; }
 
-code { padding: .14em .36em; border-radius: 5px; background: var(--nm-code-bg); font: .9em/1.55 var(--nm-font-mono); }
+.yame-editor .ProseMirror code, .milkdown .ProseMirror code, .editor .ProseMirror code {
+  padding: .14em .36em;
+  border: 1px solid var(--nm-inline-code-border);
+  border-radius: 5px;
+  color: var(--nm-text) !important;
+  background: var(--nm-inline-code-bg) !important;
+  font: .9em/1.55 var(--nm-font-mono);
+}
 pre { margin: 1.5rem 0 !important; padding: 1.35rem 1.5rem; overflow: auto; border: 1px solid var(--nm-border); border-radius: 9px; background: var(--nm-code-bg); line-height: 1.75; }
-pre code { padding: 0; background: none; color: inherit; font-size: .95rem; line-height: inherit; }
+pre code, .yame-editor .ProseMirror pre code, .milkdown .ProseMirror pre code, .editor .ProseMirror pre code {
+  padding: 0;
+  border: 0;
+  color: inherit !important;
+  background: none !important;
+  font-size: .95rem;
+  line-height: inherit;
+}
 table { width: 100%; margin: 1.5rem 0 !important; border-collapse: separate; border-spacing: 0; overflow: hidden; border: 1px solid var(--nm-border); border-radius: 8px; }
 th, td { min-width: 7rem; padding: .7rem .85rem; border-right: 1px solid var(--nm-border); border-bottom: 1px solid var(--nm-border); text-align: left; vertical-align: top; }
 th { background: var(--nm-code-bg); font-weight: 650; } tr:last-child td { border-bottom: 0; } th:last-child, td:last-child { border-right: 0; }
@@ -159,11 +150,8 @@ img, video { display: block; max-width: 100%; height: auto; margin-block: 1.5rem
 .yame-error { padding: .8rem 1rem; border: 1px solid color-mix(in srgb, var(--nm-danger) 45%, transparent); border-radius: 6px; color: var(--nm-danger); }
 
 @media (max-width: 560px) {
-  .yame-header { min-height: 40px; padding-inline: .85rem; }
-  .yame-title, .yame-status { display: none; }
-  .yame-editor .milkdown .milkdown-top-bar { top: 40px; }
   body { font-size: 16px; line-height: 1.72; }
-  .yame-canvas { padding: 2.25rem 1rem 5rem; }
+  .yame-canvas { padding: 1.25rem 1rem 5rem; }
   .yame-editor .ProseMirror, .milkdown .ProseMirror, .editor .ProseMirror { min-height: 70vh; }
   .block-handle, .yame-block-handle { position: static; float: right; margin: -.15rem 0 0 .3rem; }
   h1 { font-size: 1.75rem; } h2 { font-size: 1.4rem; }
@@ -172,8 +160,8 @@ img, video { display: block; max-width: 100%; height: auto; margin-block: 1.5rem
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }
 @media (forced-colors: active) {
-  :root { --nm-border: CanvasText; --nm-border-strong: CanvasText; --nm-focus: Highlight; --nm-accent: LinkText; }
-  .yame-header { background: Canvas; } .block-menu, .yame-block-menu, .bubble-menu, .toolbar { border: 1px solid CanvasText; background: Canvas; }
+  :root { --nm-border: CanvasText; --nm-border-strong: CanvasText; --nm-inline-code-bg: Canvas; --nm-inline-code-border: CanvasText; --nm-focus: Highlight; --nm-accent: LinkText; }
+  .block-menu, .yame-block-menu, .bubble-menu, .toolbar { border: 1px solid CanvasText; background: Canvas; }
 }
 
 .yame-emoji-popup { position: fixed; z-index: 100; width: min(280px, calc(100vw - 16px)); max-height: min(320px, 48vh); overflow: auto; padding: .3rem; border: 1px solid var(--nm-border-strong); border-radius: 9px; background: var(--nm-surface-raised); box-shadow: 0 10px 28px color-mix(in srgb, var(--nm-text) 18%, transparent); }
