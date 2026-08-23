@@ -42,6 +42,11 @@ test('packaged webview resources are referenced by CSP and ignored sources are e
   assert.match(ignore, /^src\/\*\*$/m);
 });
 
+test('custom editor registration enables the VS Code find widget', () => {
+  const extension = fs.readFileSync(path.join(process.cwd(), 'src/extension.ts'), 'utf8');
+  assert.match(extension, /webviewOptions:\s*\{[^}]*retainContextWhenHidden:\s*true[^}]*enableFindWidget:\s*true/);
+});
+
 test('inline code uses editor contrast colors and code blocks keep their own styling', () => {
   const theme = fs.readFileSync(path.join(process.cwd(), 'media/editor-theme.css'), 'utf8');
   assert.match(theme, /--nm-inline-code-bg:/);

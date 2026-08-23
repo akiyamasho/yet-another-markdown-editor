@@ -46,7 +46,3 @@ export const notionHeadingBehavior: MilkdownPlugin = (ctx) => async () => {
     ctx.set(inputRulesCtx, ctx.get(inputRulesCtx).filter((rule) => rule !== headingRule));
   };
 };
-
-export function isFindShortcut(event: Pick<KeyboardEvent, 'key' | 'metaKey' | 'ctrlKey' | 'altKey' | 'shiftKey'>): boolean {
-  return (event.metaKey || event.ctrlKey) && !event.altKey && !event.shiftKey && event.key.toLowerCase() === 'f';
-}

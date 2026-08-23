@@ -18,7 +18,7 @@ import type { Selection } from '@milkdown/kit/prose/state';
 import type { EditorToHostMessage, HostToEditorMessage } from '../protocol';
 import { isSaveShortcut, shouldMountHostDocument } from '../sync';
 import { EmojiAutocomplete } from './emoji';
-import { isFindShortcut, notionHeadingBehavior } from './editor-behavior';
+import { notionHeadingBehavior } from './editor-behavior';
 
 declare function acquireVsCodeApi(): { postMessage(message: EditorToHostMessage): void };
 
@@ -253,12 +253,6 @@ window.addEventListener('message', async (event: MessageEvent<HostToEditorMessag
 });
 
 window.addEventListener('keydown', (event) => {
-  if (isFindShortcut(event)) {
-    // Let the host/browser native find action run. Stopping propagation keeps
-    // editor plugins from consuming Mod/Ctrl-F without cancelling the default.
-    event.stopPropagation();
-    return;
-  }
   if ((event.metaKey || event.ctrlKey) && event.shiftKey && !event.altKey) {
     if (event.key.toLowerCase() === 'c') { event.preventDefault(); void copyActiveBlock(); return; }
     if (event.key.toLowerCase() === 'd') { event.preventDefault(); duplicateActiveBlock(); return; }

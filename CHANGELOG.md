@@ -3,6 +3,7 @@
 ## 0.1.5
 
 - Fixed cursor loss during editor synchronization and external document remounts.
+- Fixed Cmd/Ctrl+F so the VS Code find widget opens reliably.
 
 ## 0.1.4
 

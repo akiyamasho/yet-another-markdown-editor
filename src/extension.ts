@@ -10,7 +10,7 @@ export function activate(context: vscode.ExtensionContext): void {
   context.subscriptions.push(
     vscode.window.registerCustomEditorProvider(VIEW_TYPE, provider, {
       supportsMultipleEditorsPerDocument: false,
-      webviewOptions: { retainContextWhenHidden: true }
+      webviewOptions: { retainContextWhenHidden: true, enableFindWidget: true }
     }),
     vscode.commands.registerCommand('yetAnotherMarkdown.addSelectionToCodex', () => provider.addSelectionToCodex()),
     vscode.commands.registerCommand('yetAnotherMarkdown.openSource', async (resource?: vscode.Uri) => {
