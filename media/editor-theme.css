@@ -46,6 +46,18 @@ button, input { font: inherit; }
 button { color: inherit; }
 
 .yame-shell { min-height: 100vh; display: flex; flex-direction: column; }
+.yame-outline { position: fixed; z-index: 5; top: 1rem; left: .8rem; width: 220px; max-height: calc(100vh - 2rem); overflow: auto; padding: .65rem; border: 1px solid var(--nm-border); border-radius: 9px; background: color-mix(in srgb, var(--nm-surface-raised) 94%, transparent); box-shadow: var(--nm-shadow); backdrop-filter: blur(12px); }
+.yame-outline.is-hidden { width: auto; padding: .35rem; }
+.yame-outline.is-hidden nav, .yame-outline.is-hidden strong { display: none; }
+.yame-outline-header { display: flex; align-items: center; justify-content: space-between; gap: .5rem; color: var(--nm-muted); font-size: .75rem; letter-spacing: .04em; text-transform: uppercase; }
+.yame-outline-header button { border: 0; border-radius: 4px; padding: .2rem .35rem; color: var(--nm-muted); background: transparent; cursor: pointer; font-size: .72rem; }
+.yame-outline-header button:hover, .yame-outline-item:hover, .yame-outline-collapse:hover { background: var(--nm-hover); color: var(--nm-text); }
+.yame-outline-row { display: flex; align-items: center; gap: .1rem; margin-top: .15rem; }
+.yame-outline-item { min-width: 0; flex: 1; overflow: hidden; border: 0; border-radius: 4px; padding: .28rem .35rem; color: var(--nm-muted); background: transparent; text-align: left; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; font-size: .82rem; }
+.yame-outline-item[data-level="2"] { padding-left: 1rem; } .yame-outline-item[data-level="3"] { padding-left: 1.65rem; } .yame-outline-item[data-level="4"] { padding-left: 2.3rem; } .yame-outline-item[data-level="5"] { padding-left: 2.95rem; }
+.yame-outline-collapse { flex: 0 0 1.2rem; width: 1.2rem; height: 1.3rem; border: 0; border-radius: 4px; color: var(--nm-faint); background: transparent; cursor: pointer; }
+.yame-outline-empty { margin: .65rem .35rem .25rem; color: var(--nm-faint); font-size: .8rem; }
+.yame-collapsed-block { display: none !important; }
 .yame-canvas { width: 100%; flex: 1; padding: clamp(1.5rem, 3vw, 2.5rem) var(--nm-gutter) 9rem; }
 .yame-editor, .milkdown, .editor { width: min(100%, var(--nm-content-width)); margin: 0 auto; }
 .yame-editor .milkdown {
@@ -152,6 +164,7 @@ img, video { display: block; max-width: 100%; height: auto; margin-block: 1.5rem
 @media (max-width: 560px) {
   body { font-size: 16px; line-height: 1.72; }
   .yame-canvas { padding: 1.25rem 1rem 5rem; }
+  .yame-outline { position: static; width: calc(100% - 2rem); max-height: 12rem; margin: 1rem auto 0; }
   .yame-editor .ProseMirror, .milkdown .ProseMirror, .editor .ProseMirror { min-height: 70vh; }
   .block-handle, .yame-block-handle { position: static; float: right; margin: -.15rem 0 0 .3rem; }
   h1 { font-size: 1.75rem; } h2 { font-size: 1.4rem; }

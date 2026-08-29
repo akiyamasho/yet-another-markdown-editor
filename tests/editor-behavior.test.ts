@@ -26,3 +26,19 @@ test('external remounts preserve a focused, clamped ProseMirror selection', () =
   assert.match(source, /view\.dom\.focus\(\{ preventScroll: true \}\)/);
   assert.match(source, /restoreSelection\(previousSelection\)/);
 });
+
+test('native rendered selections survive context-menu focus changes', () => {
+  const source = fs.readFileSync('src/webview/index.ts', 'utf8');
+  assert.match(source, /selectionInsideEditor/);
+  assert.match(source, /contextmenu/);
+  assert.match(source, /if \(text !== undefined\) vscode\.postMessage\(\{ type: 'selection', text \}\)/);
+  assert.match(fs.readFileSync('src/extension.ts', 'utf8'), /Do not discard a native selection/);
+});
+
+test('Codex handoff also accepts a matching active source-editor selection', () => {
+  const source = fs.readFileSync('src/extension.ts', 'utf8');
+  assert.match(source, /vscode\.window\.activeTextEditor/);
+  assert.match(source, /activeEditor\.document\.getText\(activeEditor\.selection\)/);
+  assert.match(source, /activeEditorKey === session\.document\.uri\.toString\(\)/);
+  assert.match(source, /if \(nativeText && activeEditor\)/);
+});

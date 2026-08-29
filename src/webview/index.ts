@@ -19,6 +19,7 @@ import type { EditorToHostMessage, HostToEditorMessage } from '../protocol';
 import { isSaveShortcut, shouldMountHostDocument } from '../sync';
 import { EmojiAutocomplete } from './emoji';
 import { notionHeadingBehavior } from './editor-behavior';
+import { collapsedBlockIndexes, headingOutline } from './outline';
 
 declare function acquireVsCodeApi(): { postMessage(message: EditorToHostMessage): void };
 
@@ -29,6 +30,7 @@ let currentText = '';
 let applyingHostDocument = false;
 let ready = false;
 const emojiAutocomplete = new EmojiAutocomplete();
+const collapsedHeadings = new Set<number>();
 
 type SelectionSnapshot = { anchor: number; head: number; focused: boolean };
 
@@ -87,21 +89,84 @@ if (root) {
   // Keep Crepe's structural CSS before our VS Code-aware theme so the latter
   // can intentionally override typography, colors, and compact layout.
   document.head.insertBefore(style, document.head.querySelector('link[rel="stylesheet"]'));
-  root.innerHTML = `<div class="yame-shell"><main class="yame-canvas"><section id="editor" class="yame-editor" aria-label="Markdown document"></section></main></div>`;
+  root.innerHTML = `<div class="yame-shell"><aside class="yame-outline" aria-label="Table of contents"><div class="yame-outline-header"><strong>Contents</strong><button id="outline-toggle" type="button" aria-expanded="true" title="Hide table of contents">Hide</button></div><nav id="outline-nav"></nav></aside><main class="yame-canvas"><section id="editor" class="yame-editor" aria-label="Markdown document"></section></main></div>`;
 }
 
 let selectionFrame = 0;
+function selectionInsideEditor(): string | undefined {
+  const selection = window.getSelection();
+  const editor = document.querySelector('.ProseMirror');
+  const anchor = selection?.anchorNode;
+  if (!selection || !editor || !anchor || !editor.contains(anchor)) return undefined;
+  if (selection.isCollapsed) return '';
+  return selection.toString();
+}
+
 document.addEventListener('selectionchange', () => {
   cancelAnimationFrame(selectionFrame);
   selectionFrame = requestAnimationFrame(() => {
-    const selection = window.getSelection();
-    const editor = document.querySelector('.ProseMirror');
-    const anchor = selection?.anchorNode;
-    const text = selection && !selection.isCollapsed && editor && anchor && editor.contains(anchor)
-      ? selection.toString()
-      : '';
-    vscode.postMessage({ type: 'selection', text });
+    const text = selectionInsideEditor();
+    // Keep the last native selection while the context menu has focus. A
+    // browser selection can otherwise briefly look empty during menu launch.
+    if (text !== undefined) vscode.postMessage({ type: 'selection', text });
   });
+});
+
+document.addEventListener('contextmenu', () => {
+  const text = selectionInsideEditor();
+  if (text) vscode.postMessage({ type: 'selection', text });
+}, true);
+
+function refreshOutline(): void {
+  const editor = document.querySelector('.ProseMirror');
+  const nav = document.getElementById('outline-nav');
+  if (!editor || !nav || !crepe) return;
+  const blocks = Array.from(editor.children).map((element) => {
+    const heading = element.matches('h1,h2,h3,h4,h5') ? element : undefined;
+    return { typeName: heading ? 'heading' : 'block', level: heading ? Number(heading.tagName.slice(1)) : undefined, text: element.textContent ?? '' };
+  });
+  const entries = headingOutline(blocks);
+  nav.replaceChildren();
+  if (!entries.length) {
+    const empty = document.createElement('p'); empty.className = 'yame-outline-empty'; empty.textContent = 'No headings yet'; nav.appendChild(empty);
+  }
+  for (const entry of entries) {
+    const button = document.createElement('button');
+    const row = document.createElement('div'); row.className = 'yame-outline-row';
+    button.type = 'button'; button.className = 'yame-outline-item'; button.dataset.level = String(entry.level); button.textContent = entry.text; button.title = `Jump to ${entry.text}`;
+    button.addEventListener('click', () => {
+      const target = editor.children[entry.index] as HTMLElement | undefined;
+      if (!target) return;
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+    const collapse = document.createElement('button'); collapse.type = 'button'; collapse.className = 'yame-outline-collapse';
+    collapse.textContent = collapsedHeadings.has(entry.index) ? '▸' : '▾'; collapse.title = 'Collapse section';
+    collapse.setAttribute('aria-label', `${collapsedHeadings.has(entry.index) ? 'Expand' : 'Collapse'} ${entry.text}`);
+    collapse.setAttribute('aria-expanded', String(!collapsedHeadings.has(entry.index)));
+    collapse.addEventListener('click', () => {
+      if (collapsedHeadings.has(entry.index)) collapsedHeadings.delete(entry.index);
+      else collapsedHeadings.add(entry.index);
+      applyCollapsedBlocks(editor, blocks); refreshOutline();
+    });
+    row.append(collapse, button); nav.appendChild(row);
+  }
+  applyCollapsedBlocks(editor, blocks);
+}
+
+function applyCollapsedBlocks(editor: Element, blocks: Array<{ typeName: string; level?: number; text: string }>): void {
+  const hidden = collapsedBlockIndexes(blocks, collapsedHeadings);
+  Array.from(editor.children).forEach((element, index) => {
+    (element as HTMLElement).classList.toggle('yame-collapsed-block', hidden.has(index));
+  });
+}
+
+document.getElementById('outline-toggle')?.addEventListener('click', (event) => {
+  const button = event.currentTarget as HTMLButtonElement;
+  const outline = document.querySelector('.yame-outline');
+  const expanded = button.getAttribute('aria-expanded') === 'true';
+  button.setAttribute('aria-expanded', String(!expanded)); button.textContent = expanded ? 'Show' : 'Hide';
+  button.title = expanded ? 'Show table of contents' : 'Hide table of contents';
+  outline?.classList.toggle('is-hidden', expanded);
 });
 
 function setStatus(message: string, kind: 'info' | 'success' | 'error' = 'info'): void {
@@ -139,8 +204,12 @@ async function mount(text: string): Promise<void> {
   crepe.on((listener) => listener.markdownUpdated((_ctx, markdown) => {
     if (applyingHostDocument || markdown === currentText) return;
     currentText = markdown;
+    // Block indexes can change when headings are edited; reset UI-only folding
+    // rather than accidentally hiding a different block after an edit.
+    collapsedHeadings.clear();
     vscode.postMessage({ type: 'update', text: markdown });
     setStatus('Unsaved changes', 'info');
+    requestAnimationFrame(refreshOutline);
   }));
   try {
     await crepe.create();
@@ -152,6 +221,9 @@ async function mount(text: string): Promise<void> {
     // listeners and is safe to tear down when an external document remounts.
     crepe.editor.action((ctx) => emojiAutocomplete.attach(ctx.get(editorViewCtx)));
     restoreSelection(previousSelection);
+    requestAnimationFrame(refreshOutline);
+    const editor = document.querySelector('.ProseMirror');
+    if (editor) new MutationObserver(() => requestAnimationFrame(refreshOutline)).observe(editor, { childList: true });
     ready = true;
     applyingHostDocument = false;
     setStatus('Ready', 'success');

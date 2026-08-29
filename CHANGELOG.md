@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.6
+
+- Added native source-editor selection handoff for adding selected text to a Codex thread.
+- Added a Notion-style table of contents for H1–H5 headings with jump navigation.
+- Added UI-only heading collapse/expand controls without changing the underlying Markdown.
+
 ## 0.1.5
 
 - Fixed cursor loss during editor synchronization and external document remounts.

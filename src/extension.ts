@@ -84,7 +84,13 @@ class YetAnotherMarkdownEditorProvider implements vscode.CustomTextEditorProvide
         return;
       }
       if (message.type === 'focus') { send({ type: 'status', message: 'Editing', kind: 'info' }); return; }
-      if (message.type === 'selection') { session.selectedText = message.text; return; }
+      if (message.type === 'selection') {
+        // Do not discard a native selection while a webview context menu or
+        // command picker temporarily owns focus. An empty selection emitted
+        // from inside the editor still intentionally clears it.
+        if (message.text || session.selectedText) session.selectedText = message.text;
+        return;
+      }
       if (message.type === 'addToCodex') { await this.addSelectionToCodex(key); return; }
       if (message.type === 'status') { send({ type: 'status', message: message.message, kind: 'info' }); return; }
       if (message.type === 'openSource') { await vscode.commands.executeCommand('vscode.openWith', document.uri, 'default'); return; }
@@ -161,13 +167,19 @@ class YetAnotherMarkdownEditorProvider implements vscode.CustomTextEditorProvide
 
   async addSelectionToCodex(key = this.activeKey): Promise<void> {
     const session = key ? this.sessions.get(key) : undefined;
-    if (!session) {
-      void vscode.window.showInformationMessage('Focus a rendered Markdown document first.');
+    const activeEditor = vscode.window.activeTextEditor;
+    const activeEditorKey = activeEditor?.document.uri.toString();
+    const nativeText = activeEditor && !activeEditor.selection.isEmpty &&
+      (!session || activeEditorKey === session.document.uri.toString())
+      ? activeEditor.document.getText(activeEditor.selection).trim()
+      : '';
+    const selectedText = nativeText || session?.selectedText.trim() || '';
+    if (!session && !nativeText) {
+      void vscode.window.showInformationMessage('Focus a rendered Markdown document or select text in a source editor first.');
       return;
     }
-    const selectedText = session.selectedText.trim();
     if (!selectedText) {
-      void vscode.window.showInformationMessage('Select text in the rendered document first.');
+      void vscode.window.showInformationMessage('Select text in the rendered or source document first.');
       return;
     }
 
@@ -177,6 +189,15 @@ class YetAnotherMarkdownEditorProvider implements vscode.CustomTextEditorProvide
       void vscode.window.showWarningMessage('The Codex editor command is unavailable. The selection was copied instead.');
       return;
     }
+
+    // A source-editor selection is already native to VS Code, so let Codex
+    // consume the active editor directly. Rendered selections continue below,
+    // where they are mapped back to their Markdown source lines.
+    if (nativeText && activeEditor) {
+      await vscode.commands.executeCommand('chatgpt.addToThread');
+      return;
+    }
+    if (!session) return;
 
     if (session.document.getText() !== session.latestText) {
       const edit = new vscode.WorkspaceEdit();
