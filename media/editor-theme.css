@@ -20,11 +20,16 @@
   --nm-code-bg: color-mix(in srgb, var(--vscode-textCodeBlock-background, #f5f5f5) 88%, var(--nm-page));
   --nm-inline-code-bg: color-mix(in srgb, var(--nm-text) 11%, var(--nm-page));
   --nm-inline-code-border: color-mix(in srgb, var(--nm-text) 16%, transparent);
-  --nm-selection: color-mix(in srgb, var(--nm-focus) 25%, transparent);
+  /* Keep the pair opaque and derived from the active theme, so it remains
+     legible in dark, light, and custom VS Code themes. */
+  --nm-selection-bg: color-mix(in srgb, var(--nm-text) 34%, var(--nm-page));
+  --nm-selection-fg: var(--nm-text);
   --nm-radius: 7px;
   --nm-block-gap: .72rem;
   --nm-content-width: 900px;
   --nm-gutter: clamp(1.5rem, 6vw, 6rem);
+  --nm-outline-width: 220px;
+  --nm-outline-space: calc(var(--nm-outline-width) + 32px);
   --nm-shadow: 0 8px 28px color-mix(in srgb, #000 14%, transparent);
 }
 
@@ -40,25 +45,31 @@ body {
 }
 
 *, *::before, *::after { box-sizing: border-box; }
-::selection { background: var(--nm-selection); }
+::selection { background: var(--nm-selection-bg); color: var(--nm-selection-fg); }
 :focus-visible { outline: 2px solid var(--nm-focus); outline-offset: 2px; }
 button, input { font: inherit; }
 button { color: inherit; }
 
 .yame-shell { min-height: 100vh; display: flex; flex-direction: column; }
-.yame-outline { position: fixed; z-index: 5; top: 1rem; left: .8rem; width: 220px; max-height: calc(100vh - 2rem); overflow: auto; padding: .65rem; border: 1px solid var(--nm-border); border-radius: 9px; background: color-mix(in srgb, var(--nm-surface-raised) 94%, transparent); box-shadow: var(--nm-shadow); backdrop-filter: blur(12px); }
-.yame-outline.is-hidden { width: auto; padding: .35rem; }
+.yame-outline { position: fixed; z-index: 5; top: 1rem; left: .8rem; display: flex; flex-direction: column; width: var(--nm-outline-width); max-height: calc(100vh - 2rem); overflow: hidden; padding: .65rem; border: 1px solid var(--nm-border); border-radius: 9px; background: color-mix(in srgb, var(--nm-surface-raised) 94%, transparent); box-shadow: var(--nm-shadow); backdrop-filter: blur(12px); }
+.yame-outline.is-hidden { left: calc(.8rem + var(--nm-outline-width)); width: auto; padding: .65rem; transform: translateX(-100%); }
 .yame-outline.is-hidden nav, .yame-outline.is-hidden strong { display: none; }
+.yame-outline.is-hidden .yame-outline-action { display: none; }
+.yame-outline.is-hidden .yame-outline-header { justify-content: flex-end; }
 .yame-outline-header { display: flex; align-items: center; justify-content: space-between; gap: .5rem; color: var(--nm-muted); font-size: .75rem; letter-spacing: .04em; text-transform: uppercase; }
+.yame-outline-actions { display: flex; align-items: center; gap: .25rem; }
 .yame-outline-header button { border: 0; border-radius: 4px; padding: .2rem .35rem; color: var(--nm-muted); background: transparent; cursor: pointer; font-size: .72rem; }
+.yame-outline-header .yame-outline-action { padding: .25rem .5rem; color: var(--nm-text); background: var(--nm-hover); font-size: .68rem; font-weight: 650; letter-spacing: .02em; text-transform: none; white-space: nowrap; }
+.yame-outline-header .yame-outline-action:hover { background: var(--nm-focus); color: var(--nm-page); }
 .yame-outline-header button:hover, .yame-outline-item:hover, .yame-outline-collapse:hover { background: var(--nm-hover); color: var(--nm-text); }
 .yame-outline-row { display: flex; align-items: center; gap: .1rem; margin-top: .15rem; }
 .yame-outline-item { min-width: 0; flex: 1; overflow: hidden; border: 0; border-radius: 4px; padding: .28rem .35rem; color: var(--nm-muted); background: transparent; text-align: left; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; font-size: .82rem; }
 .yame-outline-item[data-level="2"] { padding-left: 1rem; } .yame-outline-item[data-level="3"] { padding-left: 1.65rem; } .yame-outline-item[data-level="4"] { padding-left: 2.3rem; } .yame-outline-item[data-level="5"] { padding-left: 2.95rem; }
 .yame-outline-collapse { flex: 0 0 1.2rem; width: 1.2rem; height: 1.3rem; border: 0; border-radius: 4px; color: var(--nm-faint); background: transparent; cursor: pointer; }
 .yame-outline-empty { margin: .65rem .35rem .25rem; color: var(--nm-faint); font-size: .8rem; }
+.yame-outline nav { min-height: 0; flex: 1 1 auto; overflow: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
 .yame-collapsed-block { display: none !important; }
-.yame-canvas { width: 100%; flex: 1; padding: clamp(1.5rem, 3vw, 2.5rem) var(--nm-gutter) 9rem; }
+.yame-canvas { width: 100%; flex: 1; padding: clamp(1.5rem, 3vw, 2.5rem) var(--nm-gutter) 9rem calc(var(--nm-gutter) + var(--nm-outline-space)); }
 .yame-editor, .milkdown, .editor { width: min(100%, var(--nm-content-width)); margin: 0 auto; }
 .yame-editor .milkdown {
   --crepe-color-background: var(--nm-page);
@@ -76,6 +87,18 @@ button { color: inherit; }
 }
 .yame-editor .ProseMirror, .milkdown .ProseMirror, .editor .ProseMirror {
   min-height: 65vh; padding: 2.75rem clamp(2rem, 4.5vw, 4rem); font-size: 17px; caret-color: var(--nm-focus); outline: 0; white-space: pre-wrap; overflow-wrap: anywhere;
+}
+/* Crepe's selection rule is scoped to its own theme. Keep the rendered
+   selection opaque and readable when focus moves to the command palette. */
+.yame-editor .ProseMirror ::selection,
+.yame-editor .ProseMirror::selection,
+.milkdown .ProseMirror ::selection,
+.milkdown .ProseMirror::selection,
+.editor .ProseMirror ::selection,
+.editor .ProseMirror::selection {
+  background: var(--nm-selection-bg) !important;
+  color: var(--nm-selection-fg) !important;
+  -webkit-text-fill-color: var(--nm-selection-fg);
 }
 .yame-editor .ProseMirror > *, .milkdown .ProseMirror > *, .editor .ProseMirror > * { position: relative; margin: var(--nm-block-gap) 0; }
 .yame-editor .ProseMirror > *:first-child { margin-top: 0; }
@@ -161,10 +184,19 @@ img, video { display: block; max-width: 100%; height: auto; margin-block: 1.5rem
 .raw-source-fallback textarea { width: 100%; min-height: 65vh; resize: vertical; padding: 1.35rem 1.5rem; border: 1px solid var(--nm-border); border-radius: 9px; color: var(--nm-text); background: var(--nm-code-bg); font: .92rem/1.75 var(--nm-font-mono); }
 .yame-error { padding: .8rem 1rem; border: 1px solid color-mix(in srgb, var(--nm-danger) 45%, transparent); border-radius: 6px; color: var(--nm-danger); }
 
+@media (max-width: 800px) and (min-width: 561px) {
+  .yame-canvas { padding-left: var(--nm-gutter); }
+  .yame-outline { max-height: min(50vh, calc(100vh - 2rem)); }
+}
+
 @media (max-width: 560px) {
   body { font-size: 16px; line-height: 1.72; }
-  .yame-canvas { padding: 1.25rem 1rem 5rem; }
-  .yame-outline { position: static; width: calc(100% - 2rem); max-height: 12rem; margin: 1rem auto 0; }
+  /* The fixed outline remains available while scrolling. Reserve only the
+     stable header height; the bounded overlay leaves the document readable
+     below it. */
+  .yame-canvas { padding: 4rem 1rem 5rem; }
+  .yame-outline { top: .75rem; right: .75rem; left: .75rem; width: auto; max-height: min(12rem, calc(100vh - 1.5rem)); }
+  .yame-outline.is-hidden { right: .75rem; left: auto; width: max-content; max-width: calc(100vw - 1.5rem); padding: .65rem; transform: none; }
   .yame-editor .ProseMirror, .milkdown .ProseMirror, .editor .ProseMirror { min-height: 70vh; }
   .block-handle, .yame-block-handle { position: static; float: right; margin: -.15rem 0 0 .3rem; }
   h1 { font-size: 1.75rem; } h2 { font-size: 1.4rem; }
@@ -173,7 +205,7 @@ img, video { display: block; max-width: 100%; height: auto; margin-block: 1.5rem
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }
 @media (forced-colors: active) {
-  :root { --nm-border: CanvasText; --nm-border-strong: CanvasText; --nm-inline-code-bg: Canvas; --nm-inline-code-border: CanvasText; --nm-focus: Highlight; --nm-accent: LinkText; }
+  :root { --nm-border: CanvasText; --nm-border-strong: CanvasText; --nm-inline-code-bg: Canvas; --nm-inline-code-border: CanvasText; --nm-focus: Highlight; --nm-accent: LinkText; --nm-selection-bg: Highlight; --nm-selection-fg: HighlightText; }
   .block-menu, .yame-block-menu, .bubble-menu, .toolbar { border: 1px solid CanvasText; background: Canvas; }
 }
 

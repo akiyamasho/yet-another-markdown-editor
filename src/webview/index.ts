@@ -89,10 +89,11 @@ if (root) {
   // Keep Crepe's structural CSS before our VS Code-aware theme so the latter
   // can intentionally override typography, colors, and compact layout.
   document.head.insertBefore(style, document.head.querySelector('link[rel="stylesheet"]'));
-  root.innerHTML = `<div class="yame-shell"><aside class="yame-outline" aria-label="Table of contents"><div class="yame-outline-header"><strong>Contents</strong><button id="outline-toggle" type="button" aria-expanded="true" title="Hide table of contents">Hide</button></div><nav id="outline-nav"></nav></aside><main class="yame-canvas"><section id="editor" class="yame-editor" aria-label="Markdown document"></section></main></div>`;
+  root.innerHTML = `<div class="yame-shell"><aside class="yame-outline" aria-label="Table of contents"><div class="yame-outline-header"><strong>Contents</strong><div class="yame-outline-actions"><button id="add-to-codex" class="yame-outline-action" type="button" hidden title="Add selected rendered text to Codex">Add to Codex</button><button id="outline-toggle" type="button" aria-expanded="true" aria-controls="outline-nav" title="Hide table of contents">Hide</button></div></div><nav id="outline-nav"></nav></aside><main class="yame-canvas"><section id="editor" class="yame-editor" aria-label="Markdown document"></section></main></div>`;
 }
 
 let selectionFrame = 0;
+const selectionAction = document.getElementById('add-to-codex') as HTMLButtonElement | null;
 function selectionInsideEditor(): string | undefined {
   const selection = window.getSelection();
   const editor = document.querySelector('.ProseMirror');
@@ -102,20 +103,37 @@ function selectionInsideEditor(): string | undefined {
   return selection.toString();
 }
 
+function updateSelectionAction(text: string | undefined): void {
+  if (!selectionAction) return;
+  const available = Boolean(text);
+  selectionAction.hidden = !available;
+  selectionAction.setAttribute('aria-hidden', String(!available));
+}
+
 document.addEventListener('selectionchange', () => {
   cancelAnimationFrame(selectionFrame);
   selectionFrame = requestAnimationFrame(() => {
     const text = selectionInsideEditor();
     // Keep the last native selection while the context menu has focus. A
     // browser selection can otherwise briefly look empty during menu launch.
-    if (text !== undefined) vscode.postMessage({ type: 'selection', text });
+    updateSelectionAction(text);
+    if (text !== undefined && (text || document.hasFocus())) vscode.postMessage({ type: 'selection', text });
   });
 });
 
 document.addEventListener('contextmenu', () => {
   const text = selectionInsideEditor();
+  updateSelectionAction(text);
   if (text) vscode.postMessage({ type: 'selection', text });
 }, true);
+
+selectionAction?.addEventListener('pointerdown', (event) => {
+  // Do not let focusing the header button collapse the rendered selection.
+  event.preventDefault();
+});
+selectionAction?.addEventListener('click', () => {
+  if (selectionInsideEditor()) vscode.postMessage({ type: 'addToCodex' });
+});
 
 function refreshOutline(): void {
   const editor = document.querySelector('.ProseMirror');

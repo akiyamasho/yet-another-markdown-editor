@@ -88,7 +88,7 @@ class YetAnotherMarkdownEditorProvider implements vscode.CustomTextEditorProvide
         // Do not discard a native selection while a webview context menu or
         // command picker temporarily owns focus. An empty selection emitted
         // from inside the editor still intentionally clears it.
-        if (message.text || session.selectedText) session.selectedText = message.text;
+        session.selectedText = message.text;
         return;
       }
       if (message.type === 'addToCodex') { await this.addSelectionToCodex(key); return; }

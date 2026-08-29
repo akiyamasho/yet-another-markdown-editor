@@ -9,6 +9,7 @@ tsconfig.json
 package-lock.json
 .git/**
 .github/**
+.codex/**
 AGENTS.md
 README.md
 MARKETPLACE.md

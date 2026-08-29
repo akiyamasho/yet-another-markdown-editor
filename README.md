@@ -25,7 +25,7 @@ Open a `.md` or `.markdown` file and edit the rendered document directly. Format
 - Insert content with `/`, then reorder it with block handles.
 - Copy a whole block as Markdown, duplicate it, or delete it with undo support.
 - Type an emoji shortcode such as `:rocket:` using the built-in cross-platform completion menu.
-- Select rendered text and pass its matching source lines to a Codex task.
+- Select rendered text and use **Add to Codex** in the Contents header (or **Add Rendered Selection to Codex Thread** from the context menu). This extension action maps rendered text back to Markdown source lines; the official Codex command only sees selections in native text editors.
 - Switch to the normal text editor whenever raw Markdown is the better tool.
 - Follow VS Code light, dark, and high-contrast themes with accessible keyboard focus and reduced-motion support.
 
@@ -66,7 +66,7 @@ Normal `⌘/Ctrl+C` remains selection copy.
 ## Commands and settings
 
 - **Yet Another Markdown Editor: Open Source** opens the current file in VS Code's text editor.
-- **Add Rendered Selection to Codex Thread** sends the selected rendered text with its corresponding source range.
+- **Add Rendered Selection to Codex Thread** sends the selected rendered text with its corresponding source range. Use this extension action for rendered selections; the official Codex command only receives selections from native text editors.
 - `yetAnotherMarkdownEditor.autoSave` saves visual edits automatically. Default: `true`.
 - `yetAnotherMarkdownEditor.showSourceOnOpen` prefers the text editor for Markdown files. Default: `false`.
 - `yetAnotherMarkdownEditor.debounceMs` controls the visual-to-source update delay. Default: `150`.

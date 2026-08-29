@@ -1,0 +1,4 @@
+interface:
+  display_name: "Release VS Code Extension"
+  short_description: "Safely build and publish aligned VS Code extension releases"
+  default_prompt: "Release a new version of this VS Code extension."

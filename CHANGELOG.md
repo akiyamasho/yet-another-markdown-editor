@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.7
+
+- Kept the Contents header and Hide control visible while scrolling, with a stable non-overlapping layout that avoids toggle jumps.
+- Restored rendered-selection Add to Codex bridging with focus persistence and improved high-contrast selection styling.
+
 ## 0.1.6
 
 - Added native source-editor selection handoff for adding selected text to a Codex thread.

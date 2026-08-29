@@ -31,8 +31,17 @@ test('native rendered selections survive context-menu focus changes', () => {
   const source = fs.readFileSync('src/webview/index.ts', 'utf8');
   assert.match(source, /selectionInsideEditor/);
   assert.match(source, /contextmenu/);
-  assert.match(source, /if \(text !== undefined\) vscode\.postMessage\(\{ type: 'selection', text \}\)/);
+  assert.match(source, /text \|\| document\.hasFocus\(\)/);
+  assert.match(source, /id="add-to-codex"/);
+  assert.match(source, /pointerdown/);
   assert.match(fs.readFileSync('src/extension.ts', 'utf8'), /Do not discard a native selection/);
+});
+
+test('rendered selection action is contextual and uses the existing host bridge', () => {
+  const source = fs.readFileSync('src/webview/index.ts', 'utf8');
+  assert.match(source, /selectionAction\.hidden = !available/);
+  assert.match(source, /type: 'addToCodex'/);
+  assert.match(fs.readFileSync('src/extension.ts', 'utf8'), /findSelectedLineRange\(session\.latestText, selectedText\)/);
 });
 
 test('Codex handoff also accepts a matching active source-editor selection', () => {

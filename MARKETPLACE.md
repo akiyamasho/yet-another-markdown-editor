@@ -10,7 +10,7 @@ Open a `.md` or `.markdown` file and work in a spacious rendered canvas. Use the
 
 - Headings, emphasis, links, images, quotes, dividers, lists, tasks, tables, code, math, and GFM content
 - Whole-block copy as Markdown, duplicate, delete, and reorder actions
-- Selection-aware **Add Rendered Selection to Codex Thread** support
+- Selection-aware **Add Rendered Selection to Codex Thread** support (rendered selections use this action because the official Codex command only sees native text editors)
 - VS Code light, dark, and high-contrast colors
 - Responsive layout, keyboard focus, and reduced-motion support
 - A one-command escape hatch to the underlying Markdown source
