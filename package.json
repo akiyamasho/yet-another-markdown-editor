@@ -2,7 +2,7 @@
   "name": "yet-another-markdown-editor",
   "displayName": "Yet Another Markdown Editor",
   "description": "Edit Markdown in a rendered block canvas with formatting, block actions, and emoji autocomplete.",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "publisher": "akiyamasho",
   "icon": "media/icon.png",
   "license": "MIT",
@@ -60,16 +60,23 @@
       },
       {
         "command": "yetAnotherMarkdown.addSelectionToCodex",
-        "title": "Add Rendered Selection to Codex Thread",
-        "category": "Yet Another Markdown Editor"
+        "title": "Add to Codex Thread (Rendered Selection)",
+        "category": "Codex",
+        "enablement": "activeCustomEditorId == yetAnotherMarkdown.editor"
       }
     ],
     "menus": {
       "webview/context": [
         {
           "command": "yetAnotherMarkdown.addSelectionToCodex",
-          "when": "webviewId == 'yetAnotherMarkdown.editor'",
+          "when": "webviewId == 'yetAnotherMarkdown.editor' && activeCustomEditorId == yetAnotherMarkdown.editor",
           "group": "codex@1"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "yetAnotherMarkdown.addSelectionToCodex",
+          "when": "activeCustomEditorId == yetAnotherMarkdown.editor"
         }
       ]
     },

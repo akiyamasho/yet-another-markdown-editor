@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.9
+
+- Corrected the Contents layout to use only its actual narrow dock rail, so it cannot cover the document; hiding collapses the rail to the Show control, the article transitions smoothly without jumping, and very narrow panes start collapsed.
+- Repaired the Codex Command Palette wrapper so rendered selections activate the source editor before handoff, with clipboard recovery on failure.
+
 ## 0.1.8
 
 - Made the Contents outline a compact, height-bounded floating panel without reserving permanent document width; Show/Hide now keeps the article position stable.

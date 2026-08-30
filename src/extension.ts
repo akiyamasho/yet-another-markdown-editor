@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { EditorToHostMessage, HostToEditorMessage, isEditorToHostMessage } from './protocol';
 import { findSelectedLineRange } from './selection';
 import { clearPendingTextIfPersisted, isExternalDocumentChange } from './sync';
+import { runCodexHandoff } from './codex-handoff';
 
 const VIEW_TYPE = 'yetAnotherMarkdown.editor';
 
@@ -71,7 +72,9 @@ class YetAnotherMarkdownEditorProvider implements vscode.CustomTextEditorProvide
       }
     });
     const viewListener = panel.onDidChangeViewState((event) => {
-      if (event.webviewPanel.active) this.activeKey = key;
+      if (event.webviewPanel.active) {
+        this.activeKey = key;
+      }
     });
     const messageListener = panel.webview.onDidReceiveMessage(async (raw: unknown) => {
       if (!isEditorToHostMessage(raw)) return;
@@ -161,7 +164,9 @@ class YetAnotherMarkdownEditorProvider implements vscode.CustomTextEditorProvide
       messageListener.dispose();
       this.panels.delete(key);
       this.sessions.delete(key);
-      if (this.activeKey === key) this.activeKey = undefined;
+      if (this.activeKey === key) {
+        this.activeKey = undefined;
+      }
     });
   }
 
@@ -220,18 +225,32 @@ class YetAnotherMarkdownEditorProvider implements vscode.CustomTextEditorProvide
     }
 
     const column = session.panel.viewColumn;
-    const sourceEditor = await vscode.window.showTextDocument(session.document, {
-      viewColumn: column,
-      preserveFocus: false,
-      preview: true
-    });
     const endLine = Math.min(range.endLine, session.document.lineCount - 1);
     const start = new vscode.Position(Math.min(range.startLine, endLine), 0);
     const end = session.document.lineAt(endLine).range.end;
-    sourceEditor.selection = new vscode.Selection(start, end);
-    sourceEditor.revealRange(new vscode.Range(start, end), vscode.TextEditorRevealType.InCenterIfOutsideViewport);
-    await vscode.commands.executeCommand('chatgpt.addToThread');
-    await vscode.commands.executeCommand('vscode.openWith', session.document.uri, VIEW_TYPE, column);
+    const result = await runCodexHandoff({
+      showSource: async () => {
+        const sourceEditor = await vscode.window.showTextDocument(session.document, {
+          viewColumn: column,
+          preserveFocus: false,
+          preview: true
+        });
+        sourceEditor.selection = new vscode.Selection(start, end);
+        sourceEditor.revealRange(new vscode.Range(start, end), vscode.TextEditorRevealType.InCenterIfOutsideViewport);
+        return sourceEditor;
+      },
+      isActiveSource: (sourceEditor) => {
+        const active = vscode.window.activeTextEditor;
+        return sourceEditor === active && active.document.uri.toString() === session.document.uri.toString() && active.document.uri.scheme === 'file';
+      },
+      invokeCodex: async () => {
+        await vscode.commands.executeCommand('chatgpt.addToThread');
+      },
+      copySelection: async () => { await vscode.env.clipboard.writeText(selectedText); },
+      reportFailure: (message) => void vscode.window.showErrorMessage(`Could not add the rendered selection to Codex. ${message}`),
+      restoreCustomEditor: async () => { await vscode.commands.executeCommand('vscode.openWith', session.document.uri, VIEW_TYPE, column); }
+    });
+    if (result.success) void vscode.window.showInformationMessage('Rendered selection added to Codex.');
   }
 
   private getHtml(webview: vscode.Webview): string {

@@ -89,7 +89,7 @@ if (root) {
   // Keep Crepe's structural CSS before our VS Code-aware theme so the latter
   // can intentionally override typography, colors, and compact layout.
   document.head.insertBefore(style, document.head.querySelector('link[rel="stylesheet"]'));
-  root.innerHTML = `<div class="yame-shell"><aside class="yame-outline" aria-label="Table of contents"><div class="yame-outline-header"><strong>Contents</strong><div class="yame-outline-actions"><button id="add-to-codex" class="yame-outline-action" type="button" hidden title="Add selected rendered text to Codex" aria-label="Add selected text to Codex">Codex</button><button id="outline-toggle" type="button" aria-expanded="true" aria-controls="outline-nav" title="Hide table of contents">Hide</button></div></div><nav id="outline-nav"></nav></aside><main class="yame-canvas"><section id="editor" class="yame-editor" aria-label="Markdown document"></section></main></div>`;
+  root.innerHTML = `<div class="yame-shell"><aside class="yame-outline" aria-label="Table of contents"><div class="yame-outline-header"><strong>Contents</strong><div class="yame-outline-actions"><button id="add-to-codex" class="yame-outline-action" type="button" hidden title="Add selected rendered text to Codex Thread" aria-label="Add selected text to Codex Thread">+ Codex</button><button id="outline-toggle" type="button" aria-expanded="true" aria-controls="outline-nav" title="Hide table of contents">Hide</button></div></div><nav id="outline-nav"></nav></aside><main class="yame-canvas"><section id="editor" class="yame-editor" aria-label="Markdown document"></section></main></div>`;
 }
 
 let selectionFrame = 0;
@@ -178,13 +178,23 @@ function applyCollapsedBlocks(editor: Element, blocks: Array<{ typeName: string;
   });
 }
 
-document.getElementById('outline-toggle')?.addEventListener('click', (event) => {
-  const button = event.currentTarget as HTMLButtonElement;
+const outlineToggle = document.getElementById('outline-toggle') as HTMLButtonElement | null;
+function setOutlineExpanded(expanded: boolean): void {
+  const button = outlineToggle;
   const outline = document.querySelector('.yame-outline');
-  const expanded = button.getAttribute('aria-expanded') === 'true';
-  button.setAttribute('aria-expanded', String(!expanded)); button.textContent = expanded ? 'Show' : 'Hide';
-  button.title = expanded ? 'Show table of contents' : 'Hide table of contents';
-  outline?.classList.toggle('is-hidden', expanded);
+  const shell = document.querySelector('.yame-shell');
+  if (!button) return;
+  button.setAttribute('aria-expanded', String(expanded)); button.textContent = expanded ? 'Hide' : 'Show';
+  button.title = expanded ? 'Hide table of contents' : 'Show table of contents';
+  outline?.classList.toggle('is-hidden', !expanded);
+  shell?.classList.toggle('is-outline-hidden', !expanded);
+}
+
+// Give very narrow panes a readable document by default. This runs only once;
+// subsequent user toggles are always respected, including after resizing.
+if (window.matchMedia('(max-width: 420px)').matches) setOutlineExpanded(false);
+outlineToggle?.addEventListener('click', () => {
+  setOutlineExpanded(outlineToggle.getAttribute('aria-expanded') !== 'true');
 });
 
 function setStatus(message: string, kind: 'info' | 'success' | 'error' = 'info'): void {

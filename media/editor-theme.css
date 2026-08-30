@@ -28,9 +28,13 @@
   --nm-block-gap: .72rem;
   --nm-content-width: 900px;
   --nm-gutter: clamp(1.5rem, 6vw, 6rem);
-  /* The outline is an anchored utility overlay, never a document column. */
+  /* The outline is fixed to the viewport, while the shell reserves its dock. */
   --nm-outline-left: .8rem;
   --nm-outline-width: clamp(11.5rem, 18vw, 12.5rem);
+  --nm-outline-rail: calc(var(--nm-outline-width) + 1.6rem);
+  --nm-outline-hidden-width: 3.75rem;
+  --nm-outline-hidden-rail: calc(var(--nm-outline-hidden-width) + 1.6rem);
+  --nm-outline-transition: 200ms cubic-bezier(.22, .8, .24, 1);
   --nm-shadow: 0 8px 28px color-mix(in srgb, #000 14%, transparent);
 }
 
@@ -51,9 +55,10 @@ body {
 button, input { font: inherit; }
 button { color: inherit; }
 
-.yame-shell { min-height: 100vh; display: flex; flex-direction: column; }
-.yame-outline { position: fixed; z-index: 5; top: 1rem; left: var(--nm-outline-left); display: flex; flex-direction: column; width: var(--nm-outline-width); max-height: min(55vh, 28rem); overflow: hidden; padding: .65rem; border: 1px solid var(--nm-border); border-radius: 9px; background: color-mix(in srgb, var(--nm-surface-raised) 94%, transparent); box-shadow: var(--nm-shadow); backdrop-filter: blur(12px); }
-.yame-outline.is-hidden { left: var(--nm-outline-left); width: max-content; max-width: calc(100vw - 1.5rem); padding: .65rem; transform: none; }
+.yame-shell { min-height: 100vh; display: grid; grid-template-columns: var(--nm-outline-rail) minmax(0, 1fr); transition: grid-template-columns var(--nm-outline-transition); }
+.yame-shell.is-outline-hidden { grid-template-columns: var(--nm-outline-hidden-rail) minmax(0, 1fr); }
+.yame-outline { position: fixed; z-index: 5; top: 1rem; left: var(--nm-outline-left); display: flex; flex-direction: column; width: var(--nm-outline-width); max-height: min(55vh, 28rem); overflow: hidden; padding: .65rem; border: 1px solid var(--nm-border); border-radius: 9px; background: color-mix(in srgb, var(--nm-surface-raised) 94%, transparent); box-shadow: var(--nm-shadow); backdrop-filter: blur(12px); transition: width var(--nm-outline-transition); }
+.yame-outline.is-hidden { left: var(--nm-outline-left); width: var(--nm-outline-hidden-width); max-width: none; padding: .45rem; transform: none; }
 .yame-outline.is-hidden nav, .yame-outline.is-hidden strong { display: none; }
 .yame-outline.is-hidden .yame-outline-action { display: none; }
 .yame-outline.is-hidden .yame-outline-header { justify-content: flex-end; }
@@ -70,7 +75,7 @@ button { color: inherit; }
 .yame-outline-empty { margin: .65rem .35rem .25rem; color: var(--nm-faint); font-size: .8rem; }
 .yame-outline nav { min-height: 0; flex: 1 1 auto; overflow: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
 .yame-collapsed-block { display: none !important; }
-.yame-canvas { width: 100%; flex: 1; padding: clamp(1.5rem, 3vw, 2.5rem) var(--nm-gutter) 9rem; }
+.yame-canvas { grid-column: 2; width: 100%; min-width: 0; padding: clamp(1.5rem, 3vw, 2.5rem) var(--nm-gutter) 9rem; }
 .yame-editor, .milkdown, .editor { width: min(100%, var(--nm-content-width)); margin: 0 auto; }
 .yame-editor .milkdown {
   --crepe-color-background: var(--nm-page);
@@ -191,9 +196,9 @@ img, video { display: block; max-width: 100%; height: auto; margin-block: 1.5rem
 
 @media (max-width: 560px) {
   body { font-size: 16px; line-height: 1.72; }
-  :root { --nm-outline-left: .75rem; }
+  :root { --nm-outline-left: .75rem; --nm-outline-width: min(11.5rem, 42vw); --nm-outline-rail: calc(var(--nm-outline-width) + 1.5rem); --nm-outline-hidden-width: 3.75rem; --nm-outline-hidden-rail: calc(var(--nm-outline-hidden-width) + 1.5rem); }
   .yame-canvas { padding: 4rem 1rem 5rem; }
-  .yame-outline { top: .75rem; width: min(var(--nm-outline-width), calc(100vw - 1.5rem)); max-height: min(42vh, 16rem); }
+  .yame-outline { top: .75rem; max-height: min(42vh, 16rem); }
   .yame-editor .ProseMirror, .milkdown .ProseMirror, .editor .ProseMirror { min-height: 70vh; }
   .block-handle, .yame-block-handle { position: static; float: right; margin: -.15rem 0 0 .3rem; }
   h1 { font-size: 1.75rem; } h2 { font-size: 1.4rem; }
@@ -201,6 +206,9 @@ img, video { display: block; max-width: 100%; height: auto; margin-block: 1.5rem
 }
 
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; } }
+@media (prefers-reduced-transparency: reduce) {
+  .yame-outline { backdrop-filter: none; background: var(--nm-surface-raised); }
+}
 @media (forced-colors: active) {
   :root { --nm-border: CanvasText; --nm-border-strong: CanvasText; --nm-inline-code-bg: Canvas; --nm-inline-code-border: CanvasText; --nm-focus: Highlight; --nm-accent: LinkText; --nm-selection-bg: Highlight; --nm-selection-fg: HighlightText; }
   .block-menu, .yame-block-menu, .bubble-menu, .toolbar { border: 1px solid CanvasText; background: Canvas; }
