@@ -89,7 +89,7 @@ if (root) {
   // Keep Crepe's structural CSS before our VS Code-aware theme so the latter
   // can intentionally override typography, colors, and compact layout.
   document.head.insertBefore(style, document.head.querySelector('link[rel="stylesheet"]'));
-  root.innerHTML = `<div class="yame-shell"><aside class="yame-outline" aria-label="Table of contents"><div class="yame-outline-header"><strong>Contents</strong><div class="yame-outline-actions"><button id="add-to-codex" class="yame-outline-action" type="button" hidden title="Add selected rendered text to Codex">Add to Codex</button><button id="outline-toggle" type="button" aria-expanded="true" aria-controls="outline-nav" title="Hide table of contents">Hide</button></div></div><nav id="outline-nav"></nav></aside><main class="yame-canvas"><section id="editor" class="yame-editor" aria-label="Markdown document"></section></main></div>`;
+  root.innerHTML = `<div class="yame-shell"><aside class="yame-outline" aria-label="Table of contents"><div class="yame-outline-header"><strong>Contents</strong><div class="yame-outline-actions"><button id="add-to-codex" class="yame-outline-action" type="button" hidden title="Add selected rendered text to Codex" aria-label="Add selected text to Codex">Codex</button><button id="outline-toggle" type="button" aria-expanded="true" aria-controls="outline-nav" title="Hide table of contents">Hide</button></div></div><nav id="outline-nav"></nav></aside><main class="yame-canvas"><section id="editor" class="yame-editor" aria-label="Markdown document"></section></main></div>`;
 }
 
 let selectionFrame = 0;

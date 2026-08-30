@@ -28,8 +28,9 @@
   --nm-block-gap: .72rem;
   --nm-content-width: 900px;
   --nm-gutter: clamp(1.5rem, 6vw, 6rem);
-  --nm-outline-width: 220px;
-  --nm-outline-space: calc(var(--nm-outline-width) + 32px);
+  /* The outline is an anchored utility overlay, never a document column. */
+  --nm-outline-left: .8rem;
+  --nm-outline-width: clamp(11.5rem, 18vw, 12.5rem);
   --nm-shadow: 0 8px 28px color-mix(in srgb, #000 14%, transparent);
 }
 
@@ -51,8 +52,8 @@ button, input { font: inherit; }
 button { color: inherit; }
 
 .yame-shell { min-height: 100vh; display: flex; flex-direction: column; }
-.yame-outline { position: fixed; z-index: 5; top: 1rem; left: .8rem; display: flex; flex-direction: column; width: var(--nm-outline-width); max-height: calc(100vh - 2rem); overflow: hidden; padding: .65rem; border: 1px solid var(--nm-border); border-radius: 9px; background: color-mix(in srgb, var(--nm-surface-raised) 94%, transparent); box-shadow: var(--nm-shadow); backdrop-filter: blur(12px); }
-.yame-outline.is-hidden { left: calc(.8rem + var(--nm-outline-width)); width: auto; padding: .65rem; transform: translateX(-100%); }
+.yame-outline { position: fixed; z-index: 5; top: 1rem; left: var(--nm-outline-left); display: flex; flex-direction: column; width: var(--nm-outline-width); max-height: min(55vh, 28rem); overflow: hidden; padding: .65rem; border: 1px solid var(--nm-border); border-radius: 9px; background: color-mix(in srgb, var(--nm-surface-raised) 94%, transparent); box-shadow: var(--nm-shadow); backdrop-filter: blur(12px); }
+.yame-outline.is-hidden { left: var(--nm-outline-left); width: max-content; max-width: calc(100vw - 1.5rem); padding: .65rem; transform: none; }
 .yame-outline.is-hidden nav, .yame-outline.is-hidden strong { display: none; }
 .yame-outline.is-hidden .yame-outline-action { display: none; }
 .yame-outline.is-hidden .yame-outline-header { justify-content: flex-end; }
@@ -69,7 +70,7 @@ button { color: inherit; }
 .yame-outline-empty { margin: .65rem .35rem .25rem; color: var(--nm-faint); font-size: .8rem; }
 .yame-outline nav { min-height: 0; flex: 1 1 auto; overflow: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
 .yame-collapsed-block { display: none !important; }
-.yame-canvas { width: 100%; flex: 1; padding: clamp(1.5rem, 3vw, 2.5rem) var(--nm-gutter) 9rem calc(var(--nm-gutter) + var(--nm-outline-space)); }
+.yame-canvas { width: 100%; flex: 1; padding: clamp(1.5rem, 3vw, 2.5rem) var(--nm-gutter) 9rem; }
 .yame-editor, .milkdown, .editor { width: min(100%, var(--nm-content-width)); margin: 0 auto; }
 .yame-editor .milkdown {
   --crepe-color-background: var(--nm-page);
@@ -185,18 +186,14 @@ img, video { display: block; max-width: 100%; height: auto; margin-block: 1.5rem
 .yame-error { padding: .8rem 1rem; border: 1px solid color-mix(in srgb, var(--nm-danger) 45%, transparent); border-radius: 6px; color: var(--nm-danger); }
 
 @media (max-width: 800px) and (min-width: 561px) {
-  .yame-canvas { padding-left: var(--nm-gutter); }
-  .yame-outline { max-height: min(50vh, calc(100vh - 2rem)); }
+  .yame-outline { max-height: min(52vh, 24rem); }
 }
 
 @media (max-width: 560px) {
   body { font-size: 16px; line-height: 1.72; }
-  /* The fixed outline remains available while scrolling. Reserve only the
-     stable header height; the bounded overlay leaves the document readable
-     below it. */
+  :root { --nm-outline-left: .75rem; }
   .yame-canvas { padding: 4rem 1rem 5rem; }
-  .yame-outline { top: .75rem; right: .75rem; left: .75rem; width: auto; max-height: min(12rem, calc(100vh - 1.5rem)); }
-  .yame-outline.is-hidden { right: .75rem; left: auto; width: max-content; max-width: calc(100vw - 1.5rem); padding: .65rem; transform: none; }
+  .yame-outline { top: .75rem; width: min(var(--nm-outline-width), calc(100vw - 1.5rem)); max-height: min(42vh, 16rem); }
   .yame-editor .ProseMirror, .milkdown .ProseMirror, .editor .ProseMirror { min-height: 70vh; }
   .block-handle, .yame-block-handle { position: static; float: right; margin: -.15rem 0 0 .3rem; }
   h1 { font-size: 1.75rem; } h2 { font-size: 1.4rem; }

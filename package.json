@@ -2,7 +2,7 @@
   "name": "yet-another-markdown-editor",
   "displayName": "Yet Another Markdown Editor",
   "description": "Edit Markdown in a rendered block canvas with formatting, block actions, and emoji autocomplete.",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "publisher": "akiyamasho",
   "icon": "media/icon.png",
   "license": "MIT",

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.8
+
+- Made the Contents outline a compact, height-bounded floating panel without reserving permanent document width; Show/Hide now keeps the article position stable.
+
 ## 0.1.7
 
 - Kept the Contents header and Hide control visible while scrolling, with a stable non-overlapping layout that avoids toggle jumps.
